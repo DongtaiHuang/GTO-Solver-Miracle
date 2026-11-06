@@ -1,0 +1,10 @@
+.git
+.venv
+.npm-cache
+**/node_modules
+**/.next
+**/__pycache__
+**/*.egg-info
+.coverage
+**/.pytest_cache
+.env*
