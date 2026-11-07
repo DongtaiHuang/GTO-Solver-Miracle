@@ -1,10 +1,13 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as api from "../lib/api";
 import { Trainer } from "../components/Trainer";
 import { completedState, gameState } from "./fixtures";
+import { profileFixtures } from "./study-fixtures";
+import { initialOpponents } from "../components/OpponentSetup";
 describe("trainer interactions", () => {
+  beforeEach(() => { vi.spyOn(api, "requestJson").mockResolvedValue(profileFixtures); });
   it("starts a hand, submits a hero action, shows settlement, and starts again", async () => {
     const user = userEvent.setup();
     const mock = vi.spyOn(api, "requestGame").mockRejectedValueOnce(new api.ApiError("No session", 404))
@@ -21,7 +24,7 @@ describe("trainer interactions", () => {
     expect(await screen.findByLabelText("Hand result")).toHaveTextContent("+500 chips");
     await user.click(screen.getByRole("button", { name: "New Hand" }));
     await screen.findByText("#2");
-    expect(mock).toHaveBeenLastCalledWith("/api/games", {});
+    expect(mock).toHaveBeenLastCalledWith("/api/games", { opponents: initialOpponents() });
   });
   it("restores a hand on reload without dealing a second hand", async () => {
     const mock = vi.spyOn(api, "requestGame").mockResolvedValue(gameState());

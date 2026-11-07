@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 async function proxy(request: NextRequest, context: { params: Promise<{ path: string[] }> }) {
   const { path } = await context.params;
   const route = path.join("/");
-  const permitted = (request.method === "GET" && route === "game") ||
-    (request.method === "POST" && (route === "games" || route === "game/actions"));
+  const permitted = (request.method === "GET" && ["game", "profiles", "study/current"].includes(route)) ||
+    (request.method === "POST" && ["games", "game/actions", "study"].includes(route));
   if (!permitted) return NextResponse.json({ detail: "Not found" }, { status: 404 });
   try {
     const headers = new Headers();
