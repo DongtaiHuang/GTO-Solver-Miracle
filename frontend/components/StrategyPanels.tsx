@@ -9,9 +9,6 @@ export function StrategyPanels({ result, pending }: { result: StudyResult | null
     <section className="study-card"><div className="card-heading"><h2>Action EV</h2><span className="data-tag unavailable">UNAVAILABLE</span></div>
       <p className="unavailable-value">GTO solution unavailable</p><p>EV per action will appear only with a validated calculation.</p>
       <div className="empty-metric">— <small>chips / action</small></div></section>
-    <section className="study-card"><div className="card-heading"><h2>Hand equity</h2><span className="data-tag unavailable">UNAVAILABLE</span></div>
-      <div className="empty-metric">— <small>equity</small></div><p>No equity enumeration or simulation has been run.</p>
-      <p className="field-hint">Selected classes and modeled statistics do not determine equity.</p></section>
     <section className="study-card texture-panel"><div className="card-heading"><h2>Board texture</h2>
       <span className="data-tag calculated">{pending ? "UPDATING" : result?.texture.availability === "calculated" ? "CALCULATED" : "NO BOARD"}</span></div>
       {result && !pending && result.texture.availability === "calculated" ? <>

@@ -3,7 +3,8 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
   const { path } = await context.params;
   const route = path.join("/");
   const permitted = (request.method === "GET" && ["game", "profiles", "study/current"].includes(route)) ||
-    (request.method === "POST" && ["games", "game/actions", "study"].includes(route));
+    (request.method === "POST" && ["games", "game/actions", "study", "equity/hand-vs-hand", "equity/hand-vs-range",
+      "equity/range-vs-range", "equity/multiway", "equity/pot-odds"].includes(route));
   if (!permitted) return NextResponse.json({ detail: "Not found" }, { status: 404 });
   try {
     const headers = new Headers();
@@ -14,7 +15,7 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
     const body = request.method === "POST" ? await request.text() : undefined;
     const response = await fetch(`${process.env.BACKEND_URL ?? "http://127.0.0.1:8000"}/api/${route}`, {
       method: request.method, headers, body, cache: "no-store", redirect: "error",
-      signal: AbortSignal.timeout(15000),
+      signal: AbortSignal.timeout(route.startsWith("equity/") ? 30000 : 15000),
     });
     const result = new NextResponse(await response.text(), { status: response.status });
     result.headers.set("Content-Type", "application/json");

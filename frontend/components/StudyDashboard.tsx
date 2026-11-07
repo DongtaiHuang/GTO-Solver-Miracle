@@ -8,6 +8,7 @@ import { useProfiles } from "../lib/useProfiles";
 import { ProfileEditor } from "./ProfileEditor";
 import { RangeMatrix } from "./RangeMatrix";
 import { StrategyPanels } from "./StrategyPanels";
+import { EquityAnalysis } from "./EquityAnalysis";
 
 interface Form {
   hero_position: StudySpot["hero_position"]; opponent_position: StudySpot["opponent_position"];
@@ -88,7 +89,7 @@ export function StudyDashboard() {
       <p>A full-hand workspace for ranges, opponent models, and transparent strategy sources.</p></div>
       <button className="import-button" onClick={() => void importCurrent()} disabled={loading}>Import trainer hand ↗</button></header>
     <div className="study-banner"><span className="status-dot" /><div><b>GTO solution unavailable</b>
-      <p>Model ranges and inspect card facts today. Validated strategy frequencies, EV, and equity are not connected.</p></div>
+      <p>Model ranges and inspect card facts today. GTO strategy frequencies and solver action EV are unavailable. Calculate showdown equity separately against explicit assumptions.</p></div>
       <span className="data-tag unavailable">SOLVER NOT CONNECTED</span></div>
     {(error || importError || profileError) && <div className="error-banner" role="alert">{error || importError || profileError}</div>}
     <div className="profile-comparison" role="group" aria-label="Compare opponent archetypes">
@@ -160,6 +161,9 @@ export function StudyDashboard() {
       <p className="field-hint">Changing profile parameters rebuilds the modeled opponent range and replaces its manual edits.
         Defaults describe this model only, not universal player statistics.</p>
     </aside></div>
+    <EquityAnalysis request={request} study={result} onAdoptRange={next => {
+      setLocked(false); setOpponentWeights(next);
+    }} />
     <StrategyPanels result={result} pending={loading} />
   </main>;
 }

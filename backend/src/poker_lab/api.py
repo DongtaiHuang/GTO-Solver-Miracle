@@ -4,6 +4,7 @@ from contextlib import contextmanager
 
 from fastapi import FastAPI, HTTPException, Request, Response
 
+from poker_lab.equity_api import create_equity_router
 from poker_lab.profiles import OpponentProfile, default_profiles
 from poker_lab.schemas import GameView, HeroAction, NewHandRequest
 from poker_lab.study import StudyRequest, StudyResult, analyze, study_current
@@ -28,7 +29,7 @@ def errors() -> Iterator[None]:
 
 def create_app(store: SessionStore | None = None) -> FastAPI:
     sessions = store if store is not None else SessionStore()
-    app = FastAPI(title="Poker Strategy Lab", version="0.3.0")
+    app = FastAPI(title="Poker Strategy Lab", version="0.4.0")
 
     @app.middleware("http")
     async def protect(
@@ -88,6 +89,7 @@ def create_app(store: SessionStore | None = None) -> FastAPI:
         with errors():
             return study_current(sessions.get(request.cookies.get(COOKIE)))
 
+    app.include_router(create_equity_router())
     return app
 
 
