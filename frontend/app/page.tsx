@@ -1,2 +1,2 @@
-import { Trainer } from "../components/Trainer";
-export default function Home() { return <Trainer />; }
+import { StudyDashboard } from "../components/StudyDashboard";
+export default function Home() { return <StudyDashboard />; }
