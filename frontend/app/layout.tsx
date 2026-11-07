@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Poker Strategy Lab",
-  description: "Deterministic No-Limit Texas Hold’em engine foundation",
+  description: "Play six-player No-Limit Texas Hold’em against heuristic practice opponents",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
