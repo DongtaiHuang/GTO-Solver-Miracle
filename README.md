@@ -1,7 +1,21 @@
 # GTO-Solver-Miracle
 A full-stack Texas Hold'em GTO trainer and hand history analyzer featuring opponent modeling, exploitative strategy adjustments, and poker solver algorithms.
 
-The description above states the long-term project vision. The current implementation includes the Task 001 engine foundation and Task 002 interactive trainer.
+The description above states the long-term project vision. The current implementation includes the Task 001 engine, Task 002 interactive trainer, and Task 003 strategy dashboard.
+
+---
+
+## Task 003 — Strategy dashboard and opponent modeling
+
+Study is now the default landing page at http://localhost:3000. The playable table is preserved at http://localhost:3000/trainer, with a reserved Hand Analyzer at /hand-analyzer.
+
+Study includes the 169-class range matrix, independent hero/opponent inclusion weights, configurable full-hand context, five opponent profiles, exact combo/blocker and board facts, and explicit availability panels. **GTO solution unavailable** means no validated strategy data exists; no GTO frequencies, EV, equity, or exploitative recommendations are invented. Standard GTO is not yet solver-backed.
+
+Before a trainer hand, configure each of the five opponents. TAG, LAG, Tight Passive, and Loose Passive use distinct seeded heuristics. Standard GTO explicitly falls back to the original random heuristic. Current or completed trainer hands can open in Study using only the session-owned public state.
+
+See [Task 003 architecture and assumptions](docs/TASK003.md) for parameter defaults, range and policy formulas, API/provider contracts, data boundaries, and limitations. This branch is based on Task 002 commit 9cd1fea and depends on that implementation.
+
+Development commands below remain valid. Run the complete Python and frontend suites, including `npm run test:e2e`, as described in the Task 003 document.
 
 ---
 
@@ -24,7 +38,7 @@ npm ci
 npm run dev
 ```
 
-Open http://localhost:3000 and choose **New Hand**. A browser reload restores the active hand. Opponents automatically act until the next hero decision; folding or going all-in runs the remaining hand to settlement. New Hand is available after completion. Opponent cards stay hidden on the server until a contested showdown; folded opponent cards and all opponent cards in uncontested hands remain hidden.
+Open http://localhost:3000/trainer and choose **New Hand**. A browser reload restores the active hand. Opponents automatically act until the next hero decision; folding or going all-in runs the remaining hand to settlement. New Hand is available after completion. Opponent cards stay hidden on the server until a contested showdown; folded opponent cards and all opponent cards in uncontested hands remain hidden.
 
 The table displays positions, stacks, committed street bets, status, board, total pot, effective stacks, chronological history, and per-pot payouts. Effective stack is the smaller of hero's remaining stack and the largest remaining nonfolded opponent stack; each player's public view also includes their effective stack against hero.
 

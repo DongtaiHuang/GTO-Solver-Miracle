@@ -1,3 +1,4 @@
+import type { OpponentProfile } from "./study-types";
 export type Action = "fold" | "check" | "call" | "bet" | "raise" | "all_in";
 export type Street = "preflop" | "flop" | "turn" | "river" | "complete";
 export interface Player {
@@ -18,5 +19,5 @@ export interface GameState {
   button: number; hero: number; actor: number | null; board: string[];
   pot: number; settled_pot: number; big_blind: number; effective_stack: number;
   players: Player[]; legal: LegalActions; history: HistoryEntry[];
-  outcomes: Outcome[]; showdown: boolean;
+  outcomes: Outcome[]; showdown: boolean; opponents?: OpponentProfile[];
 }

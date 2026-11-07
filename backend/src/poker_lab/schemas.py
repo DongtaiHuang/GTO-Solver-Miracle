@@ -1,10 +1,15 @@
 from pydantic import BaseModel, ConfigDict, Field, StrictInt
 
 from poker_lab.models import Action, Street
+from poker_lab.profiles import OpponentProfile, ProfileConfig
 
 
 class EmptyRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
+
+
+class NewHandRequest(EmptyRequest):
+    opponents: list[ProfileConfig] | None = Field(default=None, min_length=5, max_length=5)
 
 
 class HeroAction(EmptyRequest):
@@ -67,3 +72,4 @@ class GameView(BaseModel):
     history: list[HistoryEntry]
     outcomes: list[Outcome]
     showdown: bool
+    opponents: list[OpponentProfile] = Field(default_factory=list)

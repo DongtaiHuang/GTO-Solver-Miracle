@@ -4,7 +4,9 @@ from contextlib import contextmanager
 
 from fastapi import FastAPI, HTTPException, Request, Response
 
-from poker_lab.schemas import EmptyRequest, GameView, HeroAction
+from poker_lab.profiles import OpponentProfile, default_profiles
+from poker_lab.schemas import GameView, HeroAction, NewHandRequest
+from poker_lab.study import StudyRequest, StudyResult, analyze, study_current
 from poker_lab.trainer import CapacityReached, MissingSession, SessionStore, StaleHand
 
 COOKIE = "poker_session"
@@ -26,7 +28,7 @@ def errors() -> Iterator[None]:
 
 def create_app(store: SessionStore | None = None) -> FastAPI:
     sessions = store if store is not None else SessionStore()
-    app = FastAPI(title="Poker Strategy Lab", version="0.2.0")
+    app = FastAPI(title="Poker Strategy Lab", version="0.3.0")
 
     @app.middleware("http")
     async def protect(
@@ -49,9 +51,9 @@ def create_app(store: SessionStore | None = None) -> FastAPI:
         return {"status": "ok"}
 
     @app.post("/api/games", response_model=GameView)
-    def create(body: EmptyRequest, request: Request, response: Response) -> GameView:
+    def create(body: NewHandRequest, request: Request, response: Response) -> GameView:
         with errors():
-            token, state = sessions.create(request.cookies.get(COOKIE))
+            token, state = sessions.create(request.cookies.get(COOKIE), body.opponents)
         response.set_cookie(
             COOKIE,
             token,
@@ -72,6 +74,19 @@ def create_app(store: SessionStore | None = None) -> FastAPI:
     def action(body: HeroAction, request: Request) -> GameView:
         with errors():
             return sessions.act(request.cookies.get(COOKIE), body)
+
+    @app.get("/api/profiles", response_model=list[OpponentProfile])
+    def profiles() -> list[OpponentProfile]:
+        return default_profiles()
+
+    @app.post("/api/study", response_model=StudyResult)
+    def study(body: StudyRequest) -> StudyResult:
+        return analyze(body)
+
+    @app.get("/api/study/current", response_model=StudyResult)
+    def current_study(request: Request) -> StudyResult:
+        with errors():
+            return study_current(sessions.get(request.cookies.get(COOKIE)))
 
     return app
 

@@ -1,5 +1,9 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
+import { useProfiles } from "../lib/useProfiles";
+import { OpponentSetup, initialOpponents } from "./OpponentSetup";
+import type { ProfileConfig } from "../lib/study-types";
 import { ApiError, requestGame } from "../lib/api";
 import type { Action, GameState } from "../lib/types";
 import { ActionControls } from "./ActionControls";
@@ -8,6 +12,8 @@ import { PokerTable } from "./PokerTable";
 import { ShowdownResult } from "./ShowdownResult";
 import { chips } from "./PlayerSeat";
 export function Trainer() {
+  const { profiles, error: profileError } = useProfiles();
+  const [opponents, setOpponents] = useState<ProfileConfig[]>(initialOpponents);
   const [game, setGame] = useState<GameState | null>(null);
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState("");
@@ -15,7 +21,10 @@ export function Trainer() {
   const refresh = useCallback(async () => {
     setBusy(true);
     try {
-      setGame(await requestGame("/api/game")); setNeedsSync(false); setError("");
+      const current = await requestGame("/api/game");
+      setGame(current);
+      if (current.opponents?.length === 5) setOpponents(current.opponents.map(p => ({ id: p.id, parameters: p.parameters })));
+      setNeedsSync(false); setError("");
     } catch (err) {
       if (err instanceof ApiError && err.status === 404) {
         setGame(null); setNeedsSync(false); setError("");
@@ -49,9 +58,14 @@ export function Trainer() {
   return <main className="trainer">
     <header className="app-header"><div><p className="eyebrow">POKER STRATEGY LAB</p><h1>Play the hand.</h1></div>
       <div className="header-actions"><span className="practice-badge">Practice / 6-max</span>
-        <button className="primary" disabled={busy || needsSync || (!!game && !completed)}
-          onClick={() => void mutate("/api/games", {})}>New Hand</button></div></header>
+        <button className="primary" disabled={busy || needsSync || profiles.length !== 5 || (!!game && !completed)}
+          onClick={() => void mutate("/api/games", { opponents })}>New Hand</button></div></header>
     <p className="subtitle">Read the table. Make your decision. Five heuristic opponents — no GTO claims.</p>
+    {profileError && <div className="error-banner" role="alert">{profileError}</div>}
+    <OpponentSetup profiles={profiles} configs={opponents} onChange={setOpponents}
+      disabled={busy || profiles.length !== 5 || (!!game && !completed)} />
+    {game && <div className="trainer-study-link"><Link href="/?from=trainer">Open this hand in Study ↗</Link>
+      <span>Visible cards, positions, pot, bets, and history only</span></div>}
     {error && <div className="error-banner" role="alert">{error}
       <button disabled={busy} onClick={() => void refresh()}>Refresh table</button></div>}
     {game ? <>
