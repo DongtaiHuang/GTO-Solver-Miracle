@@ -235,3 +235,13 @@ node_modules/
 *.tsbuildinfo
 .env*
 !.env.example
+
+# Frontend test artifacts
+test-results/
+playwright-report/
+.playwright-browsers/
+coverage/
+
+# Frontend source helpers are not Python build output
+!/frontend/lib/
+!/frontend/lib/*.ts

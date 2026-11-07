@@ -1,7 +1,96 @@
 # GTO-Solver-Miracle
 A full-stack Texas Hold'em GTO trainer and hand history analyzer featuring opponent modeling, exploitative strategy adjustments, and poker solver algorithms.
 
-The description above states the long-term project vision. The implementation below is limited to Task 001.
+The description above states the long-term project vision. The current implementation includes the Task 001 engine foundation and Task 002 interactive trainer.
+
+---
+
+## Task 002 — Interactive Poker Trainer
+
+The trainer now plays complete six-player hands against five automated opponents. Hero occupies seat 0; the button rotates between hands. Each new practice hand resets all stacks to 10,000 integer chips (100 BB). This is a basic heuristic training table, not a solver or a GTO strategy recommendation.
+
+### Start the trainer
+
+From the repository root, install backend dependencies as shown below, then run:
+
+```powershell
+.\.venv\Scripts\python.exe -m uvicorn poker_lab.api:app --host 127.0.0.1 --port 8000 --reload
+```
+
+In a second terminal:
+
+```sh
+npm ci
+npm run dev
+```
+
+Open http://localhost:3000 and choose **New Hand**. A browser reload restores the active hand. Opponents automatically act until the next hero decision; folding or going all-in runs the remaining hand to settlement. New Hand is available after completion. Opponent cards stay hidden on the server until a contested showdown; folded opponent cards and all opponent cards in uncontested hands remain hidden.
+
+The table displays positions, stacks, committed street bets, status, board, total pot, effective stacks, chronological history, and per-pot payouts. Effective stack is the smaller of hero's remaining stack and the largest remaining nonfolded opponent stack; each player's public view also includes their effective stack against hero.
+
+Bet and raise inputs are **total street contributions**, not increments. Server-provided presets use the selected fraction of the pot after calling, added to the current wager, then clamp to the engine's legal full-raise range. Short all-ins use the All-in action; they are never disguised as a legal full raise. A short raise that has not reopened betting removes the raise controls.
+
+### API and ownership
+
+| Method | Path | Request |
+| --- | --- | --- |
+| POST | /api/games | `{}` — start a session or the next completed hand |
+| GET | /api/game | Restore the current session's public state |
+| POST | /api/game/actions | `{"hand_id":"…","revision":0,"action":"raise","amount":300}` |
+
+The Next.js server proxies only these routes to FastAPI. No direct cross-origin browser API calls or browser-readable session tokens are needed. Every response is marked private and noncacheable.
+
+Sessions use an opaque, cryptographically random HttpOnly, SameSite=Strict cookie scoped to /api. The backend selects seeds using server entropy; clients cannot supply or retrieve seeds, decks, stacks, or pot values. Tests can inject fixed seeds internally. A hand ID identifies a hand but never grants access to it. Each operation requires the owning session cookie. Action payloads reject unknown fields and noninteger amounts, then pass through the original engine's validation.
+
+Hand IDs and revision numbers reject stale or duplicate decisions. The server locks session operations and commits the hero decision and subsequent bot actions together. The client disables controls during requests and refreshes authoritative state after a failed response before allowing further decisions.
+
+Error responses: 400 for illegal engine actions, 404 for missing/expired sessions, 409 for stale or completed-hand actions or replacing an unfinished hand, 422 for invalid payloads, 503 when session capacity is reached. Mutation requests require JSON and reject an unapproved Origin.
+
+### Configuration and Docker
+
+| Variable | Service | Default |
+| --- | --- | --- |
+| BACKEND_URL | Next.js server | http://127.0.0.1:8000 |
+| TRAINER_ORIGIN | FastAPI | http://localhost:3000 |
+| COOKIE_SECURE | FastAPI | false; set true when using HTTPS |
+
+Set these as process environment variables when changing hosts or using HTTPS. Docker Compose connects the frontend to http://backend:8000 automatically and serves the UI at http://localhost:3000. Docker execution has not been verified locally because Docker is unavailable in this environment.
+
+### Tests
+
+```powershell
+cd backend
+..\.venv\Scripts\python.exe -m pytest
+..\.venv\Scripts\python.exe -m ruff check .
+..\.venv\Scripts\python.exe -m mypy
+cd ..
+npm test
+npm run typecheck
+npm run build
+```
+
+For real browser tests, install Chromium once, set PYTHON to the virtual environment's Python executable, and run:
+
+```powershell
+$env:PYTHON = (Resolve-Path .\.venv\Scripts\python.exe).Path
+$env:PLAYWRIGHT_BROWSERS_PATH = "$PWD\.playwright-browsers"
+cd frontend
+npx playwright install chromium
+cd ..
+npm run test:e2e
+```
+
+On macOS/Linux use .venv/bin/python. Browser tests start the production frontend and backend, play through settlement, start another hand, verify hidden cards, and check the mobile viewport. Run the production build before them. CI runs Python checks, component tests, frontend checks/build, browser tests, and Docker smoke checks.
+
+### Current limitations
+
+- Sessions are process-local memory, expire after two hours of inactivity, and are capped at 512. Restarting the backend loses hands. Run a single backend worker; shared storage and account authentication are future work. The browser cookie expires two hours after a new hand is created.
+- Different browser profiles have isolated sessions. Tabs in the same browser share a session and stale decisions are rejected.
+- The policy is a seeded randomized heuristic over legal actions. It has no strategic optimality guarantees and no equity, GTO, exploitative modeling, or coaching claims. Replace the `OpponentPolicy` protocol implementation for later models.
+- Bot actions run synchronously before each response; there is no paced animation, live multiplayer, or tournament bankroll persistence.
+- The suite currently reports a non-failing upstream Starlette warning about its httpx test-client integration.
+
+Task 001's independent engine, integer chip accounting, evaluator, tests, and MIT license remain intact. The original foundation documentation follows for reference.
 
 ---
 
@@ -42,7 +131,7 @@ npm run dev
 
 Frontend: http://localhost:3000. Backend health: http://localhost:8000/health. API documentation: http://localhost:8000/docs. On macOS/Linux, substitute `.venv/bin/python` for `.\.venv\Scripts\python.exe`.
 
-The frontend is a static foundation page; it does not expose private cards or provide a network gameplay API. The engine is directly usable from Python and imports no web-framework code.
+At the Task 001 milestone, the frontend was a static foundation page with no network gameplay API; Task 002 adds the trainer described above. The engine is directly usable from Python and imports no web-framework code.
 
 ## Engine contract
 

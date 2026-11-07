@@ -8,3 +8,7 @@
 .coverage
 **/.pytest_cache
 .env*
+
+**/test-results
+**/playwright-report
+.playwright-browsers
