@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 test("plays a real full-stack hand and resets to the next hand", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/trainer");
   const newHand = page.getByRole("button", { name: "New Hand" });
   await expect(newHand).toBeEnabled();
   await newHand.click();
@@ -24,7 +24,7 @@ test("plays a real full-stack hand and resets to the next hand", async ({ page }
 });
 test("mobile layout fits the viewport and a fold finishes the hand", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
+  await page.goto("/trainer");
   await expect(page.getByRole("button", { name: "New Hand" })).toBeEnabled();
   await page.getByRole("button", { name: "New Hand" }).click();
   await expect(page.getByRole("button", { name: "Fold", exact: true })).toBeEnabled();

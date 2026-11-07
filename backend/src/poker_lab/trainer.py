@@ -10,7 +10,8 @@ from threading import RLock
 
 from poker_lab.engine import Holdem
 from poker_lab.models import Action, Street
-from poker_lab.policy import OpponentPolicy, RandomPolicy
+from poker_lab.policy import OpponentPolicy, ProfilePolicy, RandomPolicy
+from poker_lab.profiles import OpponentProfile, ProfileConfig, resolve_profile
 from poker_lab.schemas import (
     GameView,
     HeroAction,
@@ -45,6 +46,7 @@ class Session:
     revision: int
     history: list[HistoryEntry]
     updated: float
+    opponents: tuple[OpponentProfile, ...] = ()
 
 
 def record(
@@ -167,6 +169,7 @@ def view(session: Session) -> GameView:
             for a in g.awards
         ],
         showdown=showdown,
+        opponents=list(session.opponents),
     )
 
 
@@ -200,10 +203,15 @@ class SessionStore:
             seat = session.game.actor
             if seat == 0 and not session.game.players[0].folded:
                 break
-            decision = self.policy.choose(session.game, session.rng)
+            policy = (
+                ProfilePolicy(session.opponents[seat - 1]) if session.opponents else self.policy
+            )
+            decision = policy.choose(session.game, session.rng)
             apply_action(session, seat, decision.action, decision.amount)
 
-    def create(self, token: str | None) -> tuple[str, GameView]:
+    def create(
+        self, token: str | None, configs: list[ProfileConfig] | None = None
+    ) -> tuple[str, GameView]:
         with self.lock:
             try:
                 previous = self._lookup(token)
@@ -223,6 +231,11 @@ class SessionStore:
                 revision=0,
                 history=[],
                 updated=self.clock(),
+                opponents=tuple(resolve_profile(c) for c in configs)
+                if configs is not None
+                else previous.opponents
+                if previous
+                else (),
             )
             record(session, (button + 1) % 6, "small_blind", 50, street=Street.PREFLOP)
             record(session, (button + 2) % 6, "big_blind", 100, street=Street.PREFLOP)
