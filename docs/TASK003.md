@@ -1,5 +1,7 @@
 # Task 003 — Study and opponent modeling
 
+Historical milestone note: [Task 004](TASK004.md) adds real conditional showdown equity and simplified pot odds. The unavailable-equity descriptions below record the Task 003 state; GTO strategy outputs remain unavailable.
+
 ## Branch dependency
 
 Task 003 is developed on `codex/task-003-strategy-dashboard`, directly based on Task 002 commit `9cd1fea92586a251ad722d144ce1b07edcafb414` (`codex/task-002-poker-trainer`). The local main at branch creation contained Task 001 only. Task 003 therefore depends on Task 002 and includes its implementation in any comparison against that older main. No branches have been pushed or merged automatically.

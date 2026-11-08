@@ -1,7 +1,17 @@
 # GTO-Solver-Miracle
 A full-stack Texas Hold'em GTO trainer and hand history analyzer featuring opponent modeling, exploitative strategy adjustments, and poker solver algorithms.
 
-The description above states the long-term project vision. The current implementation includes the Task 001 engine, Task 002 interactive trainer, and Task 003 strategy dashboard.
+The description above states the long-term project vision. The current implementation includes the Task 001 engine, Task 002 interactive trainer, Task 003 strategy dashboard, and Task 004 equity engine.
+
+---
+
+## Task 004 — Real showdown equity
+
+Study now calculates specific hand vs hand, hand vs weighted range, and range vs range equity using the existing evaluator. The backend additionally supports 2–6 players with fractional tied-pot shares. Small cases enumerate exactly; larger cases use bounded, seeded Monte Carlo with reported valid sample counts, standard errors, and conservative 95% intervals.
+
+In Equity Analysis, explicitly edit or adopt an assumed opponent range, choose cards/ranges/board/dead cards and method, then click **Calculate equity**. Nothing expensive runs on every keystroke. Pot odds use the calculated equity and a user-specified call amount, with the single-pot/no-future-betting assumptions clearly displayed. GTO frequencies and solver action EV remain unavailable.
+
+See [Task 004 algorithms, probability assumptions, limits, and benchmarks](docs/TASK004.md). The same development and validation commands below apply, including all existing tests and real browser flows. No new runtime dependency or alternate hand evaluator was introduced.
 
 ---
 

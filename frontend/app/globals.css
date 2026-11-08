@@ -167,3 +167,22 @@ footer { margin-top: 30px; padding-top: 18px; border-top: 1px solid #24303a; col
 @media (max-width: 450px) { .study-card { padding: 15px; }.range-panel { padding: 12px; }.range-cell { font-size: 9px; }.range-tabs button { padding: 8px; font-size: 10px; }.range-tabs > span { font-size: 8px; }.range-legend { font-size: 7px; }.range-edit-row { gap: 8px; }.range-edit-row .text-button { padding: 9px 7px; font-size: 9px; }.range-summaries { gap: 9px; }.range-summaries .study-card { padding: 12px; }.range-summaries h2 { font-size: 12px; }.range-count { font-size: 19px; }.analysis-panels { grid-template-columns: 1fr; }.explanation-panel { grid-column: auto; }.profile-comparison { grid-template-columns: repeat(5,80px); }.study-banner { padding: 14px; }.study-banner p { font-size: 9px; } }
 
 .fixed-configuration { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; margin-bottom: 16px; max-width: 520px; }.fixed-configuration input { color: #8fa898; background: #16211e; }
+
+/* Task 004: deliberate equity calculations, separate from solver outputs */
+.equity-workspace { display: grid; grid-template-columns: minmax(0, 2fr) minmax(240px, 1fr); gap: 20px; margin-top: 24px; align-items: start; }
+.equity-panel { border-color: #43614f; }
+.equity-inputs { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 15px; margin: 20px 0; }
+.equity-context { display: flex; flex-wrap: wrap; gap: 12px 20px; border-block: 1px solid #2d433c; padding: 14px 0; font-size: 10px; color: #8da19b; line-height: 1.7; }
+.equity-context b { color: #d4e3ce; font-weight: 500; }
+.range-consent { border: 1px solid #685c3c; border-radius: 7px; background: #28271f; padding: 14px; margin: 17px 0; font-size: 11px; color: #cbbf96; }
+.range-consent p { color: #aaa78c; }
+.equity-calculate { margin-top: 20px; font-size: 12px; }
+.equity-results { border-top: 1px solid #3b5445; margin-top: 22px; padding-top: 22px; }
+.equity-numbers { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; margin-bottom: 18px; }
+.equity-numbers span { color: #99b09f; font-size: 9px; display: block; margin-bottom: 9px; }
+.equity-numbers strong { font-size: clamp(20px,2vw,29px); font-weight: 500; color: #d1e9be; }
+.odds-panel .field { margin-bottom: 15px; }
+.odds-results { border-top: 1px solid #40554a; margin-top: 20px; padding-top: 16px; }
+.odds-results strong { display: block; font-size: 21px; color: #cedec3; font-weight: 500; margin-top: 5px; }
+@media (max-width: 1050px) { .equity-workspace { grid-template-columns: minmax(0,1fr); } }
+@media (max-width: 450px) { .equity-inputs { gap: 12px; }.equity-numbers { gap: 8px; }.equity-numbers strong { font-size: 20px; } }
