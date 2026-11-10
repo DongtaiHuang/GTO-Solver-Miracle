@@ -13,6 +13,7 @@ import { profileFixtures, studyFixture } from "./study-fixtures";
 function setupApi(imported?: StudyResult) {
   return vi.spyOn(api, "requestJson").mockImplementation((async (path: string, body?: unknown) => {
     if (path === "/api/profiles") return profileFixtures;
+    if (path.startsWith("/api/strategy/")) return { scenarios: [], message: "No source" };
     if (path === "/api/study/current") {
       if (!imported) throw new api.ApiError("No active session; start a new hand", 404);
       return imported;
@@ -21,6 +22,12 @@ function setupApi(imported?: StudyResult) {
     if (request.spot.hero_position === request.spot.opponent_position) throw new api.ApiError("Hero and opponent positions must differ", 422);
     return studyFixture(request);
   }) as typeof api.requestJson);
+}
+
+function renderRangeStudy() {
+  const view = render(<StudyDashboard />);
+  fireEvent.click(screen.getByRole("button", { name: "Range editing & equity" }));
+  return view;
 }
 
 describe("169-class range representation", () => {
@@ -79,7 +86,7 @@ describe("editable opponent assumptions", () => {
 describe("study dashboard", () => {
   beforeEach(() => window.history.replaceState({}, "", "/"));
   it("shows modeled ranges and unavailable solver outputs without invented numbers", async () => {
-    setupApi(); render(<StudyDashboard />);
+    setupApi(); renderRangeStudy();
     await screen.findByText("Model ready");
     expect(screen.getAllByText("GTO solution unavailable").length).toBeGreaterThanOrEqual(3);
     expect(screen.getByLabelText("Opponent profile")).toHaveValue("tag");
@@ -89,7 +96,7 @@ describe("study dashboard", () => {
     expect(screen.getByRole("button", { name: "AA inclusion 100%" })).toBeInTheDocument();
   });
   it("edits hand inclusion weights and keeps hero and opponent ranges independent", async () => {
-    const mock = setupApi(), user = userEvent.setup(); render(<StudyDashboard />);
+    const mock = setupApi(), user = userEvent.setup(); renderRangeStudy();
     await screen.findByText("Model ready");
     await user.click(screen.getByRole("button", { name: "Hero range" }));
     await user.click(screen.getByRole("button", { name: "KQs inclusion 0%" }));
@@ -104,7 +111,7 @@ describe("study dashboard", () => {
     expect(screen.getByRole("button", { name: "72o inclusion 100%" })).toBeInTheDocument();
   });
   it("rebuilds the modeled range when selecting and editing an archetype", async () => {
-    const mock = setupApi(), user = userEvent.setup(); render(<StudyDashboard />);
+    const mock = setupApi(), user = userEvent.setup(); renderRangeStudy();
     await screen.findByText("Model ready");
     await user.click(screen.getByRole("button", { name: /^LAG/ }));
     expect(screen.getByLabelText("VPIP (%)")).toHaveValue(38);
@@ -120,7 +127,7 @@ describe("study dashboard", () => {
     expect(screen.getByText("Not yet solver-backed")).toBeInTheDocument();
   });
   it("shows invalid-spot errors and recovers without displaying stale calculations", async () => {
-    setupApi(); const user = userEvent.setup(); render(<StudyDashboard />);
+    setupApi(); const user = userEvent.setup(); renderRangeStudy();
     await screen.findByText("Model ready");
     await user.selectOptions(screen.getByLabelText("Hero position"), "BB");
     expect(await screen.findByRole("alert")).toHaveTextContent("Hero and opponent positions must differ");
@@ -135,7 +142,7 @@ describe("study dashboard", () => {
     imported.spot = { ...imported.spot, hero_cards: ["As", "Kd"], board: ["2c", "3c", "4h"],
       street: "flop", pot: 900, bet_sizes: [300], history: "1. preflop: Alex raise 300" };
     imported.providers.forEach(p => { p.legal_actions = ["fold", "call"]; });
-    setupApi(imported); const user = userEvent.setup(); render(<StudyDashboard />);
+    setupApi(imported); const user = userEvent.setup(); renderRangeStudy();
     await screen.findByText("Model ready");
     await user.click(screen.getByRole("button", { name: /Import trainer hand/ }));
     expect(await screen.findByText("TRAINER SNAPSHOT")).toBeInTheDocument();
@@ -149,7 +156,7 @@ describe("study dashboard", () => {
   });
   it("honors the trainer navigation link and handles a missing session", async () => {
     window.history.replaceState({}, "", "/?from=trainer");
-    setupApi(); render(<StudyDashboard />);
+    setupApi(); renderRangeStudy();
     expect(await screen.findByRole("alert")).toHaveTextContent("No active session");
     await screen.findByText("Model ready");
   });

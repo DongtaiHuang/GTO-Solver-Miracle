@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 test("Study is the landing page with editable ranges and honest solver availability", async ({ page }) => {
   await page.goto("/");
+  await page.getByRole("button", { name: "Range editing & equity", exact: true }).click();
   await expect(page.getByRole("link", { name: /Study Ranges/ })).toHaveAttribute("aria-current", "page");
   await expect(page.getByText("Model ready")).toBeVisible();
   await expect(page.getByRole("group", { name: "169 starting hand classes" }).getByRole("button")).toHaveCount(169);
@@ -53,6 +54,7 @@ test("configured trainer hands open in Study with only public game-state data", 
 test("Study remains usable on mobile", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
+  await page.getByRole("button", { name: "Range editing & equity", exact: true }).click();
   await expect(page.getByText("Model ready")).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.getByRole("button", { name: "72o inclusion 0%" }).click();

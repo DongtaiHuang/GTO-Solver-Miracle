@@ -7,6 +7,8 @@ from fastapi import FastAPI, HTTPException, Request, Response
 from poker_lab.equity_api import create_equity_router
 from poker_lab.profiles import OpponentProfile, default_profiles
 from poker_lab.schemas import GameView, HeroAction, NewHandRequest
+from poker_lab.strategy_api import create_strategy_router
+from poker_lab.strategy_catalog import SolutionCatalog
 from poker_lab.study import StudyRequest, StudyResult, analyze, study_current
 from poker_lab.trainer import CapacityReached, MissingSession, SessionStore, StaleHand
 
@@ -27,9 +29,11 @@ def errors() -> Iterator[None]:
         raise HTTPException(400, str(exc)) from None
 
 
-def create_app(store: SessionStore | None = None) -> FastAPI:
+def create_app(
+    store: SessionStore | None = None, *, strategy_catalog: SolutionCatalog | None = None
+) -> FastAPI:
     sessions = store if store is not None else SessionStore()
-    app = FastAPI(title="Poker Strategy Lab", version="0.4.0")
+    app = FastAPI(title="Poker Strategy Lab", version="0.5.0")
 
     @app.middleware("http")
     async def protect(
@@ -90,6 +94,7 @@ def create_app(store: SessionStore | None = None) -> FastAPI:
             return study_current(sessions.get(request.cookies.get(COOKIE)))
 
     app.include_router(create_equity_router())
+    app.include_router(create_strategy_router(strategy_catalog))
     return app
 
 

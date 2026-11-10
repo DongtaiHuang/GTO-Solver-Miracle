@@ -121,10 +121,12 @@ class PrecomputedGTOProvider:
             game_state_id=context.game_state_id,
             legal_actions=context.legal_actions,
             source="precomputed_gto",
-            calculation_method="No validated dataset configured",
+            calculation_method="Complete exact scenario required; free-form Study context is not matched",
             availability="unavailable",
             confidence="not_applicable",
-            assumptions=["No strategy dataset or supported spot library has been loaded."],
+            assumptions=[
+                "Use the exact strategy lookup with a complete replay-validated scenario; no implicit conversion is performed."
+            ],
             explanation="GTO solution unavailable",
         )
 

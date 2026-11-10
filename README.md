@@ -1,7 +1,17 @@
 # GTO-Solver-Miracle
 A full-stack Texas Hold'em GTO trainer and hand history analyzer featuring opponent modeling, exploitative strategy adjustments, and poker solver algorithms.
 
-The description above states the long-term project vision. The current implementation includes the Task 001 engine, Task 002 interactive trainer, Task 003 strategy dashboard, and Task 004 equity engine.
+The description above states the long-term project vision. The current implementation includes the Task 001 engine, Task 002 interactive trainer, Task 003 strategy dashboard, Task 004 equity engine, and Task 005 exact strategy integration.
+
+---
+
+## Task 005 — Exact strategy integration
+
+Study now opens in **Strategy visualization**, with exact scenario lookup, a mixed-frequency 169-hand matrix, combination details, sized actions, postflop history, provenance, and a side-by-side opponent-assumption comparison. **Range editing & equity** preserves the existing editable ranges and equity tools; Trainer remains at /trainer.
+
+**No genuine solver dataset is bundled.** The default GTO catalog is empty and displays **GTO solution unavailable**. Four synthetic preflop/flop/turn/river examples require an explicit opt-in and are never presented as GTO recommendations. Real exports require explicit source/redistribution permission and trusted, content-bound local review; metadata alone does not prove mathematical correctness. No exploitative best response is calculated.
+
+See [Task 005 dataset format, local import, review requirements, and limitations](docs/TASK005.md). Administrative import is a local CLI only. Keep private inputs/catalogs outside Git and Docker images, for example under the ignored .strategy-data/ directory. Existing development and validation commands below still apply.
 
 ---
 

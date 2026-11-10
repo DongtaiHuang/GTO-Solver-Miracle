@@ -15,6 +15,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <span className="nav-icon">{link.icon}</span><span>{link.title}<small>{link.note}</small></span>
     </Link>)}</nav>
     <div className="sidebar-note"><span className="status-dot" /> RESEARCH BUILD
-      <p>Study the assumptions.<br />Know the source.</p><span className="availability-tag">No solver dataset connected</span></div>
+      <p>Study the assumptions.<br />Know the source.</p><span className="availability-tag">Coverage requires an exact match</span></div>
   </aside><div className="app-content">{children}</div></div>;
 }

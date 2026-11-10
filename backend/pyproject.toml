@@ -27,3 +27,6 @@ line-length = 100
 python_version = "3.12"
 strict = true
 files = ["src"]
+
+[tool.setuptools.package-data]
+poker_lab = ["data/*.json"]
