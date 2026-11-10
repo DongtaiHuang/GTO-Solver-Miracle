@@ -26,9 +26,13 @@ export function StrategyComparison({ result, profiles, opponent, onChange }: {
       <p>{current?.description ?? "Select an opponent profile."}</p>
       {params ? <dl className="model-parameter-summary">{Object.entries(parameterLabels).map(([key,label]) =>
         <div key={key}><dt>{label}</dt><dd>{params[key as keyof typeof params]}%</dd></div>)}</dl> :
-        <p>Standard GTO is not yet solver-backed. No statistical parameters or opponent action frequencies are invented.</p>}
+        <p>{result?.status==="available" && /^river-(275|550)-(btn|bb)-v1$/.test(result.source?.solution_id??"")
+          ? "Standard GTO uses the paired equilibrium combo policy at this river decision."
+          : "Standard GTO is not yet solver-backed. No statistical parameters or opponent action frequencies are invented."}</p>}
       <p className="comparison-boundary">These are modeled parameters, not solver action frequencies.
-        No exploitative best response, expected profit, or opponent-specific optimal EV has been calculated.</p>
+        {result?.status==="available" && /^river-(275|550)-(btn|bb)-v1$/.test(result.source?.solution_id??"")
+          ? "The river response below uses separate, combo-specific river assumptions."
+          : "No exploitative best response, expected profit, or opponent-specific optimal EV has been calculated."}</p>
       <details><summary>Edit opponent assumptions</summary>
         <ProfileEditor profiles={profiles} value={opponent} onChange={onChange} /></details>
     </div>

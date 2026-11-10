@@ -5,7 +5,7 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
   const permitted = (request.method === "GET" && ["game", "profiles", "study/current", "strategy/scenarios", "strategy/examples"].includes(route)) ||
     (request.method === "POST" && ["games", "game/actions", "study", "equity/hand-vs-hand", "equity/hand-vs-range",
       "equity/range-vs-range", "equity/multiway", "equity/pot-odds",
-      "strategy/query", "strategy/frequencies", "strategy/source"].includes(route));
+      "strategy/exploit", "strategy/query", "strategy/frequencies", "strategy/source"].includes(route));
   if (!permitted) return NextResponse.json({ detail: "Not found" }, { status: 404 });
   try {
     const headers = new Headers();
