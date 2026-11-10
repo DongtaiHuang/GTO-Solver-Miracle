@@ -12,3 +12,5 @@
 **/test-results
 **/playwright-report
 .playwright-browsers
+
+.strategy-data

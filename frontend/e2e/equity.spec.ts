@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test("explicit river range produces exact equity and simplified call EV", async ({ page }) => {
   await page.goto("/");
+  await page.getByRole("button", { name: "Range editing & equity", exact: true }).click();
   await expect(page.getByText("Model ready")).toBeVisible();
   await page.getByLabel("Hero hole cards", { exact: true }).fill("As Ah");
   await page.getByLabel("Street", { exact: true }).selectOption("river");
@@ -33,6 +34,7 @@ test("explicit river range produces exact equity and simplified call EV", async 
 
 test("preflop Monte Carlo is seeded and a changed input requires manual recalculation", async ({ page }) => {
   await page.goto("/");
+  await page.getByRole("button", { name: "Range editing & equity", exact: true }).click();
   await expect(page.getByText("Model ready")).toBeVisible();
   await page.getByLabel("Hero hole cards", { exact: true }).fill("As Ah");
   await page.getByLabel("Opponent equity input").selectOption("hand");
@@ -59,6 +61,7 @@ test("preflop Monte Carlo is seeded and a changed input requires manual recalcul
 test("mobile equity requires an explicit profile range assumption", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
+  await page.getByRole("button", { name: "Range editing & equity", exact: true }).click();
   await expect(page.getByText("Model ready")).toBeVisible();
   await page.getByLabel("Hero hole cards", { exact: true }).fill("As Ah");
   const button = page.getByRole("button", { name: "Calculate equity", exact: true });

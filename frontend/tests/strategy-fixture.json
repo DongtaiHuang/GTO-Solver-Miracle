@@ -1,0 +1,325 @@
+{
+  "scenario_id": "12b0d42afc86ad3566884b681e89eb428b4048034b102759c1625cdf09e97fea",
+  "status": "synthetic_demo",
+  "is_gto_recommendation": false,
+  "message": "SYNTHETIC UI FIXTURE — not a solver solution or poker recommendation.",
+  "scenario": {
+    "schema_version": "1.0",
+    "game_format": "6-max NLHE cash",
+    "players": 6,
+    "starting_stacks": {
+      "BTN": 10000,
+      "SB": 10000,
+      "BB": 10000,
+      "UTG": 10000,
+      "HJ": 10000,
+      "CO": 10000
+    },
+    "small_blind": 50,
+    "big_blind": 100,
+    "ante": 0,
+    "hero_position": "UTG",
+    "opponent_position": "BB",
+    "effective_stack": 9900,
+    "pot": 150,
+    "street": "preflop",
+    "board": [],
+    "dead_cards": [],
+    "history": [],
+    "legal_actions": [
+      {
+        "action": "fold",
+        "amount": null
+      },
+      {
+        "action": "call",
+        "amount": 100
+      },
+      {
+        "action": "raise",
+        "amount": 200
+      },
+      {
+        "action": "raise",
+        "amount": 300
+      },
+      {
+        "action": "all_in",
+        "amount": 10000
+      }
+    ],
+    "abstraction": {
+      "tree_id": "synthetic-demo-tree-v1",
+      "range_model_id": "synthetic-example-reach-v1",
+      "card_model": "exact_cards",
+      "rake_model": "none",
+      "action_semantics": "total_street_bet_for_aggression",
+      "assumptions": [
+        "Synthetic UI demonstration, not a poker solution.",
+        "Toy reach weights are not calibrated ranges.",
+        "No EV values or equilibrium claims."
+      ]
+    }
+  },
+  "actions": [
+    {
+      "key": "all_in@10000",
+      "action": "all_in",
+      "amount": 10000
+    },
+    {
+      "key": "call@100",
+      "action": "call",
+      "amount": 100
+    },
+    {
+      "key": "fold",
+      "action": "fold",
+      "amount": null
+    },
+    {
+      "key": "raise@200",
+      "action": "raise",
+      "amount": 200
+    },
+    {
+      "key": "raise@300",
+      "action": "raise",
+      "amount": 300
+    }
+  ],
+  "source": {
+    "solution_id": "synthetic-ui-preflop-v1",
+    "kind": "synthetic_fixture",
+    "solver_identifier": "SYNTHETIC UI FIXTURE - NO SOLVER",
+    "solver_version": "ui-demo-1.0",
+    "source_name": "Locally authored UI fixture, not a solver dataset",
+    "source_url": "https://github.com/DongtaiHuang/GTO-Solver-Miracle",
+    "license_name": "MIT project fixture",
+    "license_url": "https://github.com/DongtaiHuang/GTO-Solver-Miracle/blob/main/LICENSE",
+    "redistribution": "permitted",
+    "validation_status": "synthetic_only",
+    "validation_methodology": "Schema and betting replay checks only; no solver or equilibrium computation.",
+    "limitations": [
+      "Fabricated UI probabilities must never be used as poker recommendations.",
+      "Partial combination coverage; no validated action EV."
+    ],
+    "checked_at": "2026-11-09T00:00:00+00:00",
+    "imported_at": "2026-11-10T03:09:28.468837+00:00",
+    "approval_status": "synthetic_only",
+    "mathematical_verification": "Mathematical correctness is not independently reproduced by this application."
+  },
+  "combinations": [
+    {
+      "cards": [
+        "Ac",
+        "Ad"
+      ],
+      "hand_class": "AA",
+      "reach_weight": 1.0,
+      "frequencies": {
+        "fold": 0.1,
+        "call@100": 0.2,
+        "raise@200": 0.4,
+        "raise@300": 0.3,
+        "all_in@10000": 0.0
+      },
+      "action_ev": null
+    },
+    {
+      "cards": [
+        "As",
+        "Ah"
+      ],
+      "hand_class": "AA",
+      "reach_weight": 0.5,
+      "frequencies": {
+        "fold": 0.2,
+        "call@100": 0.3,
+        "raise@200": 0.25,
+        "raise@300": 0.25,
+        "all_in@10000": 0.0
+      },
+      "action_ev": null
+    },
+    {
+      "cards": [
+        "Kc",
+        "Kd"
+      ],
+      "hand_class": "KK",
+      "reach_weight": 1.0,
+      "frequencies": {
+        "fold": 0.1,
+        "call@100": 0.2,
+        "raise@200": 0.4,
+        "raise@300": 0.3,
+        "all_in@10000": 0.0
+      },
+      "action_ev": null
+    },
+    {
+      "cards": [
+        "Ks",
+        "Kh"
+      ],
+      "hand_class": "KK",
+      "reach_weight": 0.5,
+      "frequencies": {
+        "fold": 0.2,
+        "call@100": 0.3,
+        "raise@200": 0.25,
+        "raise@300": 0.25,
+        "all_in@10000": 0.0
+      },
+      "action_ev": null
+    },
+    {
+      "cards": [
+        "As",
+        "Ks"
+      ],
+      "hand_class": "AKs",
+      "reach_weight": 1.0,
+      "frequencies": {
+        "fold": 0.1,
+        "call@100": 0.2,
+        "raise@200": 0.4,
+        "raise@300": 0.3,
+        "all_in@10000": 0.0
+      },
+      "action_ev": null
+    },
+    {
+      "cards": [
+        "Ah",
+        "Kh"
+      ],
+      "hand_class": "AKs",
+      "reach_weight": 0.5,
+      "frequencies": {
+        "fold": 0.2,
+        "call@100": 0.3,
+        "raise@200": 0.25,
+        "raise@300": 0.25,
+        "all_in@10000": 0.0
+      },
+      "action_ev": null
+    },
+    {
+      "cards": [
+        "Qc",
+        "Qd"
+      ],
+      "hand_class": "QQ",
+      "reach_weight": 1.0,
+      "frequencies": {
+        "fold": 0.1,
+        "call@100": 0.2,
+        "raise@200": 0.4,
+        "raise@300": 0.3,
+        "all_in@10000": 0.0
+      },
+      "action_ev": null
+    },
+    {
+      "cards": [
+        "9s",
+        "9h"
+      ],
+      "hand_class": "99",
+      "reach_weight": 0.5,
+      "frequencies": {
+        "fold": 0.2,
+        "call@100": 0.3,
+        "raise@200": 0.25,
+        "raise@300": 0.25,
+        "all_in@10000": 0.0
+      },
+      "action_ev": null
+    }
+  ],
+  "classes": [
+    {
+      "hand_class": "AA",
+      "represented_combos": 2,
+      "unblocked_combos": 6,
+      "reach_mass": 1.5,
+      "frequencies": {
+        "fold": 0.13333333333333333,
+        "call@100": 0.2333333333333333,
+        "raise@200": 0.35000000000000003,
+        "raise@300": 0.2833333333333333,
+        "all_in@10000": 0.0
+      },
+      "action_ev": null
+    },
+    {
+      "hand_class": "AKs",
+      "represented_combos": 2,
+      "unblocked_combos": 4,
+      "reach_mass": 1.5,
+      "frequencies": {
+        "fold": 0.13333333333333333,
+        "call@100": 0.2333333333333333,
+        "raise@200": 0.35000000000000003,
+        "raise@300": 0.2833333333333333,
+        "all_in@10000": 0.0
+      },
+      "action_ev": null
+    },
+    {
+      "hand_class": "KK",
+      "represented_combos": 2,
+      "unblocked_combos": 6,
+      "reach_mass": 1.5,
+      "frequencies": {
+        "fold": 0.13333333333333333,
+        "call@100": 0.2333333333333333,
+        "raise@200": 0.35000000000000003,
+        "raise@300": 0.2833333333333333,
+        "all_in@10000": 0.0
+      },
+      "action_ev": null
+    },
+    {
+      "hand_class": "QQ",
+      "represented_combos": 1,
+      "unblocked_combos": 6,
+      "reach_mass": 1.0,
+      "frequencies": {
+        "fold": 0.1,
+        "call@100": 0.2,
+        "raise@200": 0.4,
+        "raise@300": 0.3,
+        "all_in@10000": 0.0
+      },
+      "action_ev": null
+    },
+    {
+      "hand_class": "99",
+      "represented_combos": 1,
+      "unblocked_combos": 6,
+      "reach_mass": 0.5,
+      "frequencies": {
+        "fold": 0.2,
+        "call@100": 0.3,
+        "raise@200": 0.25,
+        "raise@300": 0.25,
+        "all_in@10000": 0.0
+      },
+      "action_ev": null
+    }
+  ],
+  "frequencies": {
+    "fold": 0.13333333333333333,
+    "call@100": 0.2333333333333333,
+    "raise@200": 0.35000000000000003,
+    "raise@300": 0.2833333333333333,
+    "all_in@10000": 0.0
+  },
+  "action_ev": null,
+  "represented_combos": 8,
+  "unblocked_combos": 1326,
+  "aggregation_method": "Reach-weighted means over represented unblocked combos only; missing combos are not folds."
+}

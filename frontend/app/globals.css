@@ -186,3 +186,52 @@ footer { margin-top: 30px; padding-top: 18px; border-top: 1px solid #24303a; col
 .odds-results strong { display: block; font-size: 21px; color: #cedec3; font-weight: 500; margin-top: 5px; }
 @media (max-width: 1050px) { .equity-workspace { grid-template-columns: minmax(0,1fr); } }
 @media (max-width: 450px) { .equity-inputs { gap: 12px; }.equity-numbers { gap: 8px; }.equity-numbers strong { font-size: 20px; } }
+
+/* Task 005: sized strategies and explicit source modes */
+.study-view-switch { display: flex; gap: 8px; border-bottom: 1px solid #35463e; padding-bottom: 18px; margin: 24px 0 20px; }
+.study-view-switch button { background: #142229; font-size: 12px; }
+.study-view-switch [aria-pressed="true"] { background: #2b4032; color: #d5edc2; border-color: #9bb483; }
+.strategy-workspace { display: flex; flex-direction: column; gap: 22px; }
+.synthetic-workspace { border-left: 3px solid #bd9a58; padding-left: 14px; }
+.solver-scenario h2 { font-size: 23px; letter-spacing: -.02em; }
+.demo-switch { display: flex; gap: 10px; align-items: center; font-size: 11px; color: #c3ba99; margin: 22px 0; cursor: pointer; }
+.demo-switch input { accent-color: #b99e5e; width: 15px; height: 15px; }
+.demo-notice { border: 1px solid #957846; background: #332c1e; border-radius: 8px; padding: 16px; color: #e6c88d; margin: 18px 0; font-size: 12px; }
+.demo-notice p, .demo-warning { color: #c8b894 !important; font-size: 11px; }
+.scenario-query-row { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: end; gap: 14px; margin: 22px 0 14px; }
+.scenario-query-row button { font-size: 12px; }
+.coverage-message { font-size: 10px !important; }
+.scenario-json { border-top: 1px solid #30434a; margin-top: 18px; padding-top: 14px; color: #9db3bd; font-size: 11px; }
+.scenario-json summary, .strategy-comparison summary { cursor: pointer; }
+.scenario-json .field { margin-top: 15px; }
+.scenario-json textarea { font-family: monospace; font-size: 11px; max-height: 460px; }
+.strategy-node-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 22px; background: #0d191e; padding: 16px; border-radius: 8px; margin-top: 18px; color: #a7bcad; font-size: 11px; }
+.strategy-node-summary .board { margin: 0; }
+.strategy-node-summary .card { width: 32px; height: 44px; font-size: 13px; padding: 4px; }.strategy-node-summary .card b { font-size: 16px; }
+.strategy-status { margin-top: 20px; padding: 16px; border: 1px solid #3d5e47; border-radius: 8px; font-size: 12px; }.strategy-status p { margin-bottom: 0; }
+.strategy-status.unavailable { border-color: #78633c; color: #d2bd91; }.strategy-status.synthetic_demo { border-color: #ba9452; color: #e5c384; }
+.strategy-data-grid { display: grid; grid-template-columns: minmax(0,1.7fr) minmax(260px,1fr); gap: 20px; align-items: start; }
+.strategy-cell { aspect-ratio: 1.12; border: 1px solid #35444b; background: #1a2930; border-radius: 3px; padding: 0; min-width: 0; position: relative; overflow: hidden; font-size: clamp(8px,.85vw,12px); }
+.strategy-cell:hover:not(:disabled) { border-color: #d7dfb5; background: #273f40; }
+.strategy-cell b { position: relative; z-index: 1; font-weight: 500; text-shadow: 0 1px 3px #0009; }
+.strategy-segments { position: absolute; inset: 0; display: flex; opacity: .83; }
+.strategy-segments i { display: block; height: 100%; flex-shrink: 0; }
+.strategy-cell.strategy-selected { border-color: #e9d99b; box-shadow: 0 0 0 1px #e9d99b; }
+.strategy-action-legend { display: flex; gap: 12px; margin: 18px 0; flex-wrap: wrap; font-size: 9px; color: #9fb2b6; }
+.strategy-action-legend span { display: flex; gap: 6px; align-items: center; }.strategy-action-legend i { width: 9px; height: 9px; border-radius: 2px; }
+.frequency-chart { padding: 10px 0; }
+.frequency-row { margin: 14px 0; font-size: 10px; }.frequency-row > div:first-child { display: flex; justify-content: space-between; margin-bottom: 7px; gap: 10px; color: #aebfc2; }
+.frequency-row b { color: #d7e3da; font-weight: 500; }
+.frequency-track { height: 7px; background: #24353d; border-radius: 3px; overflow: hidden; }.frequency-track i { display: block; height: 100%; }
+.selected-strategy h3, .history-abstraction h3 { font-size: 12px; font-weight: 500; margin-top: 24px; color: #bed0bf; }
+.history-abstraction { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 30px; }
+.history-abstraction ol { padding: 0; list-style: none; }.history-abstraction li { padding: 5px 0; }
+.strategy-comparison { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; align-items: start; }
+.model-parameter-summary { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px 20px; font-size: 10px; margin: 24px 0; }
+.model-parameter-summary > div { display: flex; justify-content: space-between; gap: 8px; border-bottom: 1px solid #2a4148; padding: 9px 0; }.model-parameter-summary dt { color: #90a7af; }.model-parameter-summary dd { margin: 0; color: #c7d5c4; }
+.comparison-boundary { border: 1px solid #5c4b6b; border-radius: 6px; padding: 13px; background: #252234; color: #bfb0ce !important; }
+.strategy-comparison summary { font-size: 11px; color: #b6cbb2; padding: 16px 0 0; }.strategy-comparison .profile-editor { margin-top: 18px; }
+.strategy-provenance dl { display: grid; grid-template-columns: 150px minmax(0,1fr); gap: 14px; font-size: 11px; line-height: 1.7; }.strategy-provenance dt { color: #8ba298; }.strategy-provenance dd { margin: 0; color: #bacbc9; overflow-wrap: anywhere; }
+.strategy-provenance a { color: #bbd9a5; }
+@media (max-width: 1100px) { .strategy-data-grid { grid-template-columns: minmax(0,1fr); }.selected-strategy .frequency-chart { max-width: 600px; } }
+@media (max-width: 760px) { .strategy-comparison { grid-template-columns: minmax(0,1fr); }.scenario-query-row { grid-template-columns: minmax(0,1fr); }.scenario-query-row button { justify-self: start; }.strategy-provenance dl { grid-template-columns: minmax(0,1fr); gap: 7px; }.strategy-provenance dd { margin-bottom: 12px; }.history-abstraction { grid-template-columns: minmax(0,1fr); gap: 14px; }.study-view-switch button { font-size: 10px; padding: 10px; }.synthetic-workspace { padding-left: 8px; }.model-parameter-summary { gap: 8px 12px; }.strategy-cell { font-size: 9px; } }

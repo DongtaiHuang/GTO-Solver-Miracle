@@ -1,0 +1,1076 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "synthetic-ui-examples-v1",
+  "solutions": [
+    {
+      "schema_version": "1.0",
+      "solution_id": "synthetic-ui-preflop-v1",
+      "kind": "synthetic_fixture",
+      "scenario": {
+        "schema_version": "1.0",
+        "game_format": "6-max NLHE cash",
+        "players": 6,
+        "starting_stacks": {
+          "BTN": 10000,
+          "SB": 10000,
+          "BB": 10000,
+          "UTG": 10000,
+          "HJ": 10000,
+          "CO": 10000
+        },
+        "small_blind": 50,
+        "big_blind": 100,
+        "ante": 0,
+        "hero_position": "UTG",
+        "opponent_position": "BB",
+        "effective_stack": 9900,
+        "pot": 150,
+        "street": "preflop",
+        "board": [],
+        "dead_cards": [],
+        "history": [],
+        "legal_actions": [
+          {
+            "action": "fold",
+            "amount": null
+          },
+          {
+            "action": "call",
+            "amount": 100
+          },
+          {
+            "action": "raise",
+            "amount": 200
+          },
+          {
+            "action": "raise",
+            "amount": 300
+          },
+          {
+            "action": "all_in",
+            "amount": 10000
+          }
+        ],
+        "abstraction": {
+          "tree_id": "synthetic-demo-tree-v1",
+          "range_model_id": "synthetic-example-reach-v1",
+          "card_model": "exact_cards",
+          "rake_model": "none",
+          "action_semantics": "total_street_bet_for_aggression",
+          "assumptions": [
+            "Synthetic UI demonstration, not a poker solution.",
+            "Toy reach weights are not calibrated ranges.",
+            "No EV values or equilibrium claims."
+          ]
+        }
+      },
+      "solver_identifier": "SYNTHETIC UI FIXTURE - NO SOLVER",
+      "solver_version": "ui-demo-1.0",
+      "exported_at": "2026-11-09T00:00:00Z",
+      "provenance": {
+        "source_name": "Locally authored UI fixture, not a solver dataset",
+        "source_url": "https://github.com/DongtaiHuang/GTO-Solver-Miracle",
+        "license_name": "MIT project fixture",
+        "license_url": "https://github.com/DongtaiHuang/GTO-Solver-Miracle/blob/main/LICENSE",
+        "usage_granted": true,
+        "usage_evidence": "Original synthetic demonstration authored for this MIT-licensed project.",
+        "redistribution": "permitted",
+        "publish": true
+      },
+      "validation": {
+        "status": "synthetic_only",
+        "checked_at": "2026-11-09T00:00:00Z",
+        "methodology": "Schema and betting replay checks only; no solver or equilibrium computation.",
+        "evidence_reference": "Synthetic demonstration authoring; not mathematical validation.",
+        "limitations": [
+          "Fabricated UI probabilities must never be used as poker recommendations.",
+          "Partial combination coverage; no validated action EV."
+        ],
+        "ev_verified": false
+      },
+      "combinations": [
+        {
+          "cards": [
+            "Ac",
+            "Ad"
+          ],
+          "reach_weight": 1.0,
+          "frequencies": {
+            "fold": 0.1,
+            "call@100": 0.2,
+            "raise@200": 0.4,
+            "raise@300": 0.3,
+            "all_in@10000": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "As",
+            "Ah"
+          ],
+          "reach_weight": 0.5,
+          "frequencies": {
+            "fold": 0.2,
+            "call@100": 0.3,
+            "raise@200": 0.25,
+            "raise@300": 0.25,
+            "all_in@10000": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "Kc",
+            "Kd"
+          ],
+          "reach_weight": 1.0,
+          "frequencies": {
+            "fold": 0.1,
+            "call@100": 0.2,
+            "raise@200": 0.4,
+            "raise@300": 0.3,
+            "all_in@10000": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "Ks",
+            "Kh"
+          ],
+          "reach_weight": 0.5,
+          "frequencies": {
+            "fold": 0.2,
+            "call@100": 0.3,
+            "raise@200": 0.25,
+            "raise@300": 0.25,
+            "all_in@10000": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "As",
+            "Ks"
+          ],
+          "reach_weight": 1.0,
+          "frequencies": {
+            "fold": 0.1,
+            "call@100": 0.2,
+            "raise@200": 0.4,
+            "raise@300": 0.3,
+            "all_in@10000": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "Ah",
+            "Kh"
+          ],
+          "reach_weight": 0.5,
+          "frequencies": {
+            "fold": 0.2,
+            "call@100": 0.3,
+            "raise@200": 0.25,
+            "raise@300": 0.25,
+            "all_in@10000": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "Qc",
+            "Qd"
+          ],
+          "reach_weight": 1.0,
+          "frequencies": {
+            "fold": 0.1,
+            "call@100": 0.2,
+            "raise@200": 0.4,
+            "raise@300": 0.3,
+            "all_in@10000": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "9s",
+            "9h"
+          ],
+          "reach_weight": 0.5,
+          "frequencies": {
+            "fold": 0.2,
+            "call@100": 0.3,
+            "raise@200": 0.25,
+            "raise@300": 0.25,
+            "all_in@10000": 0.0
+          },
+          "action_ev": null
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "solution_id": "synthetic-ui-flop-v1",
+      "kind": "synthetic_fixture",
+      "scenario": {
+        "schema_version": "1.0",
+        "game_format": "6-max NLHE cash",
+        "players": 6,
+        "starting_stacks": {
+          "BTN": 10000,
+          "SB": 10000,
+          "BB": 10000,
+          "UTG": 10000,
+          "HJ": 10000,
+          "CO": 10000
+        },
+        "small_blind": 50,
+        "big_blind": 100,
+        "ante": 0,
+        "hero_position": "SB",
+        "opponent_position": "BB",
+        "effective_stack": 9900,
+        "pot": 600,
+        "street": "flop",
+        "board": [
+          "2c",
+          "7h",
+          "Jd"
+        ],
+        "dead_cards": [],
+        "history": [
+          {
+            "action": "call",
+            "amount": 100,
+            "street": "preflop",
+            "position": "UTG"
+          },
+          {
+            "action": "call",
+            "amount": 100,
+            "street": "preflop",
+            "position": "HJ"
+          },
+          {
+            "action": "call",
+            "amount": 100,
+            "street": "preflop",
+            "position": "CO"
+          },
+          {
+            "action": "call",
+            "amount": 100,
+            "street": "preflop",
+            "position": "BTN"
+          },
+          {
+            "action": "call",
+            "amount": 50,
+            "street": "preflop",
+            "position": "SB"
+          },
+          {
+            "action": "check",
+            "amount": null,
+            "street": "preflop",
+            "position": "BB"
+          }
+        ],
+        "legal_actions": [
+          {
+            "action": "fold",
+            "amount": null
+          },
+          {
+            "action": "check",
+            "amount": null
+          },
+          {
+            "action": "bet",
+            "amount": 300
+          },
+          {
+            "action": "bet",
+            "amount": 600
+          },
+          {
+            "action": "all_in",
+            "amount": 9900
+          }
+        ],
+        "abstraction": {
+          "tree_id": "synthetic-demo-tree-v1",
+          "range_model_id": "synthetic-example-reach-v1",
+          "card_model": "exact_cards",
+          "rake_model": "none",
+          "action_semantics": "total_street_bet_for_aggression",
+          "assumptions": [
+            "Synthetic UI demonstration, not a poker solution.",
+            "Toy reach weights are not calibrated ranges.",
+            "No EV values or equilibrium claims."
+          ]
+        }
+      },
+      "solver_identifier": "SYNTHETIC UI FIXTURE - NO SOLVER",
+      "solver_version": "ui-demo-1.0",
+      "exported_at": "2026-11-09T00:00:00Z",
+      "provenance": {
+        "source_name": "Locally authored UI fixture, not a solver dataset",
+        "source_url": "https://github.com/DongtaiHuang/GTO-Solver-Miracle",
+        "license_name": "MIT project fixture",
+        "license_url": "https://github.com/DongtaiHuang/GTO-Solver-Miracle/blob/main/LICENSE",
+        "usage_granted": true,
+        "usage_evidence": "Original synthetic demonstration authored for this MIT-licensed project.",
+        "redistribution": "permitted",
+        "publish": true
+      },
+      "validation": {
+        "status": "synthetic_only",
+        "checked_at": "2026-11-09T00:00:00Z",
+        "methodology": "Schema and betting replay checks only; no solver or equilibrium computation.",
+        "evidence_reference": "Synthetic demonstration authoring; not mathematical validation.",
+        "limitations": [
+          "Fabricated UI probabilities must never be used as poker recommendations.",
+          "Partial combination coverage; no validated action EV."
+        ],
+        "ev_verified": false
+      },
+      "combinations": [
+        {
+          "cards": [
+            "Ac",
+            "Ad"
+          ],
+          "reach_weight": 1.0,
+          "frequencies": {
+            "fold": 0.1,
+            "check": 0.2,
+            "bet@300": 0.4,
+            "bet@600": 0.3,
+            "all_in@9900": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "As",
+            "Ah"
+          ],
+          "reach_weight": 0.5,
+          "frequencies": {
+            "fold": 0.2,
+            "check": 0.3,
+            "bet@300": 0.25,
+            "bet@600": 0.25,
+            "all_in@9900": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "Kc",
+            "Kd"
+          ],
+          "reach_weight": 1.0,
+          "frequencies": {
+            "fold": 0.1,
+            "check": 0.2,
+            "bet@300": 0.4,
+            "bet@600": 0.3,
+            "all_in@9900": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "Ks",
+            "Kh"
+          ],
+          "reach_weight": 0.5,
+          "frequencies": {
+            "fold": 0.2,
+            "check": 0.3,
+            "bet@300": 0.25,
+            "bet@600": 0.25,
+            "all_in@9900": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "As",
+            "Ks"
+          ],
+          "reach_weight": 1.0,
+          "frequencies": {
+            "fold": 0.1,
+            "check": 0.2,
+            "bet@300": 0.4,
+            "bet@600": 0.3,
+            "all_in@9900": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "Ah",
+            "Kh"
+          ],
+          "reach_weight": 0.5,
+          "frequencies": {
+            "fold": 0.2,
+            "check": 0.3,
+            "bet@300": 0.25,
+            "bet@600": 0.25,
+            "all_in@9900": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "Qc",
+            "Qd"
+          ],
+          "reach_weight": 1.0,
+          "frequencies": {
+            "fold": 0.1,
+            "check": 0.2,
+            "bet@300": 0.4,
+            "bet@600": 0.3,
+            "all_in@9900": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "9s",
+            "9h"
+          ],
+          "reach_weight": 0.5,
+          "frequencies": {
+            "fold": 0.2,
+            "check": 0.3,
+            "bet@300": 0.25,
+            "bet@600": 0.25,
+            "all_in@9900": 0.0
+          },
+          "action_ev": null
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "solution_id": "synthetic-ui-turn-v1",
+      "kind": "synthetic_fixture",
+      "scenario": {
+        "schema_version": "1.0",
+        "game_format": "6-max NLHE cash",
+        "players": 6,
+        "starting_stacks": {
+          "BTN": 10000,
+          "SB": 10000,
+          "BB": 10000,
+          "UTG": 10000,
+          "HJ": 10000,
+          "CO": 10000
+        },
+        "small_blind": 50,
+        "big_blind": 100,
+        "ante": 0,
+        "hero_position": "SB",
+        "opponent_position": "BB",
+        "effective_stack": 9900,
+        "pot": 600,
+        "street": "turn",
+        "board": [
+          "2c",
+          "7h",
+          "Jd",
+          "Qs"
+        ],
+        "dead_cards": [],
+        "history": [
+          {
+            "action": "call",
+            "amount": 100,
+            "street": "preflop",
+            "position": "UTG"
+          },
+          {
+            "action": "call",
+            "amount": 100,
+            "street": "preflop",
+            "position": "HJ"
+          },
+          {
+            "action": "call",
+            "amount": 100,
+            "street": "preflop",
+            "position": "CO"
+          },
+          {
+            "action": "call",
+            "amount": 100,
+            "street": "preflop",
+            "position": "BTN"
+          },
+          {
+            "action": "call",
+            "amount": 50,
+            "street": "preflop",
+            "position": "SB"
+          },
+          {
+            "action": "check",
+            "amount": null,
+            "street": "preflop",
+            "position": "BB"
+          },
+          {
+            "action": "check",
+            "amount": null,
+            "street": "flop",
+            "position": "SB"
+          },
+          {
+            "action": "check",
+            "amount": null,
+            "street": "flop",
+            "position": "BB"
+          },
+          {
+            "action": "check",
+            "amount": null,
+            "street": "flop",
+            "position": "UTG"
+          },
+          {
+            "action": "check",
+            "amount": null,
+            "street": "flop",
+            "position": "HJ"
+          },
+          {
+            "action": "check",
+            "amount": null,
+            "street": "flop",
+            "position": "CO"
+          },
+          {
+            "action": "check",
+            "amount": null,
+            "street": "flop",
+            "position": "BTN"
+          }
+        ],
+        "legal_actions": [
+          {
+            "action": "fold",
+            "amount": null
+          },
+          {
+            "action": "check",
+            "amount": null
+          },
+          {
+            "action": "bet",
+            "amount": 300
+          },
+          {
+            "action": "bet",
+            "amount": 600
+          },
+          {
+            "action": "all_in",
+            "amount": 9900
+          }
+        ],
+        "abstraction": {
+          "tree_id": "synthetic-demo-tree-v1",
+          "range_model_id": "synthetic-example-reach-v1",
+          "card_model": "exact_cards",
+          "rake_model": "none",
+          "action_semantics": "total_street_bet_for_aggression",
+          "assumptions": [
+            "Synthetic UI demonstration, not a poker solution.",
+            "Toy reach weights are not calibrated ranges.",
+            "No EV values or equilibrium claims."
+          ]
+        }
+      },
+      "solver_identifier": "SYNTHETIC UI FIXTURE - NO SOLVER",
+      "solver_version": "ui-demo-1.0",
+      "exported_at": "2026-11-09T00:00:00Z",
+      "provenance": {
+        "source_name": "Locally authored UI fixture, not a solver dataset",
+        "source_url": "https://github.com/DongtaiHuang/GTO-Solver-Miracle",
+        "license_name": "MIT project fixture",
+        "license_url": "https://github.com/DongtaiHuang/GTO-Solver-Miracle/blob/main/LICENSE",
+        "usage_granted": true,
+        "usage_evidence": "Original synthetic demonstration authored for this MIT-licensed project.",
+        "redistribution": "permitted",
+        "publish": true
+      },
+      "validation": {
+        "status": "synthetic_only",
+        "checked_at": "2026-11-09T00:00:00Z",
+        "methodology": "Schema and betting replay checks only; no solver or equilibrium computation.",
+        "evidence_reference": "Synthetic demonstration authoring; not mathematical validation.",
+        "limitations": [
+          "Fabricated UI probabilities must never be used as poker recommendations.",
+          "Partial combination coverage; no validated action EV."
+        ],
+        "ev_verified": false
+      },
+      "combinations": [
+        {
+          "cards": [
+            "Ac",
+            "Ad"
+          ],
+          "reach_weight": 1.0,
+          "frequencies": {
+            "fold": 0.1,
+            "check": 0.2,
+            "bet@300": 0.4,
+            "bet@600": 0.3,
+            "all_in@9900": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "As",
+            "Ah"
+          ],
+          "reach_weight": 0.5,
+          "frequencies": {
+            "fold": 0.2,
+            "check": 0.3,
+            "bet@300": 0.25,
+            "bet@600": 0.25,
+            "all_in@9900": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "Kc",
+            "Kd"
+          ],
+          "reach_weight": 1.0,
+          "frequencies": {
+            "fold": 0.1,
+            "check": 0.2,
+            "bet@300": 0.4,
+            "bet@600": 0.3,
+            "all_in@9900": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "Ks",
+            "Kh"
+          ],
+          "reach_weight": 0.5,
+          "frequencies": {
+            "fold": 0.2,
+            "check": 0.3,
+            "bet@300": 0.25,
+            "bet@600": 0.25,
+            "all_in@9900": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "As",
+            "Ks"
+          ],
+          "reach_weight": 1.0,
+          "frequencies": {
+            "fold": 0.1,
+            "check": 0.2,
+            "bet@300": 0.4,
+            "bet@600": 0.3,
+            "all_in@9900": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "Ah",
+            "Kh"
+          ],
+          "reach_weight": 0.5,
+          "frequencies": {
+            "fold": 0.2,
+            "check": 0.3,
+            "bet@300": 0.25,
+            "bet@600": 0.25,
+            "all_in@9900": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "Qc",
+            "Qd"
+          ],
+          "reach_weight": 1.0,
+          "frequencies": {
+            "fold": 0.1,
+            "check": 0.2,
+            "bet@300": 0.4,
+            "bet@600": 0.3,
+            "all_in@9900": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "9s",
+            "9h"
+          ],
+          "reach_weight": 0.5,
+          "frequencies": {
+            "fold": 0.2,
+            "check": 0.3,
+            "bet@300": 0.25,
+            "bet@600": 0.25,
+            "all_in@9900": 0.0
+          },
+          "action_ev": null
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "solution_id": "synthetic-ui-river-v1",
+      "kind": "synthetic_fixture",
+      "scenario": {
+        "schema_version": "1.0",
+        "game_format": "6-max NLHE cash",
+        "players": 6,
+        "starting_stacks": {
+          "BTN": 10000,
+          "SB": 10000,
+          "BB": 10000,
+          "UTG": 10000,
+          "HJ": 10000,
+          "CO": 10000
+        },
+        "small_blind": 50,
+        "big_blind": 100,
+        "ante": 0,
+        "hero_position": "SB",
+        "opponent_position": "BB",
+        "effective_stack": 9900,
+        "pot": 600,
+        "street": "river",
+        "board": [
+          "2c",
+          "7h",
+          "Jd",
+          "Qs",
+          "9c"
+        ],
+        "dead_cards": [],
+        "history": [
+          {
+            "action": "call",
+            "amount": 100,
+            "street": "preflop",
+            "position": "UTG"
+          },
+          {
+            "action": "call",
+            "amount": 100,
+            "street": "preflop",
+            "position": "HJ"
+          },
+          {
+            "action": "call",
+            "amount": 100,
+            "street": "preflop",
+            "position": "CO"
+          },
+          {
+            "action": "call",
+            "amount": 100,
+            "street": "preflop",
+            "position": "BTN"
+          },
+          {
+            "action": "call",
+            "amount": 50,
+            "street": "preflop",
+            "position": "SB"
+          },
+          {
+            "action": "check",
+            "amount": null,
+            "street": "preflop",
+            "position": "BB"
+          },
+          {
+            "action": "check",
+            "amount": null,
+            "street": "flop",
+            "position": "SB"
+          },
+          {
+            "action": "check",
+            "amount": null,
+            "street": "flop",
+            "position": "BB"
+          },
+          {
+            "action": "check",
+            "amount": null,
+            "street": "flop",
+            "position": "UTG"
+          },
+          {
+            "action": "check",
+            "amount": null,
+            "street": "flop",
+            "position": "HJ"
+          },
+          {
+            "action": "check",
+            "amount": null,
+            "street": "flop",
+            "position": "CO"
+          },
+          {
+            "action": "check",
+            "amount": null,
+            "street": "flop",
+            "position": "BTN"
+          },
+          {
+            "action": "check",
+            "amount": null,
+            "street": "turn",
+            "position": "SB"
+          },
+          {
+            "action": "check",
+            "amount": null,
+            "street": "turn",
+            "position": "BB"
+          },
+          {
+            "action": "check",
+            "amount": null,
+            "street": "turn",
+            "position": "UTG"
+          },
+          {
+            "action": "check",
+            "amount": null,
+            "street": "turn",
+            "position": "HJ"
+          },
+          {
+            "action": "check",
+            "amount": null,
+            "street": "turn",
+            "position": "CO"
+          },
+          {
+            "action": "check",
+            "amount": null,
+            "street": "turn",
+            "position": "BTN"
+          }
+        ],
+        "legal_actions": [
+          {
+            "action": "fold",
+            "amount": null
+          },
+          {
+            "action": "check",
+            "amount": null
+          },
+          {
+            "action": "bet",
+            "amount": 300
+          },
+          {
+            "action": "bet",
+            "amount": 600
+          },
+          {
+            "action": "all_in",
+            "amount": 9900
+          }
+        ],
+        "abstraction": {
+          "tree_id": "synthetic-demo-tree-v1",
+          "range_model_id": "synthetic-example-reach-v1",
+          "card_model": "exact_cards",
+          "rake_model": "none",
+          "action_semantics": "total_street_bet_for_aggression",
+          "assumptions": [
+            "Synthetic UI demonstration, not a poker solution.",
+            "Toy reach weights are not calibrated ranges.",
+            "No EV values or equilibrium claims."
+          ]
+        }
+      },
+      "solver_identifier": "SYNTHETIC UI FIXTURE - NO SOLVER",
+      "solver_version": "ui-demo-1.0",
+      "exported_at": "2026-11-09T00:00:00Z",
+      "provenance": {
+        "source_name": "Locally authored UI fixture, not a solver dataset",
+        "source_url": "https://github.com/DongtaiHuang/GTO-Solver-Miracle",
+        "license_name": "MIT project fixture",
+        "license_url": "https://github.com/DongtaiHuang/GTO-Solver-Miracle/blob/main/LICENSE",
+        "usage_granted": true,
+        "usage_evidence": "Original synthetic demonstration authored for this MIT-licensed project.",
+        "redistribution": "permitted",
+        "publish": true
+      },
+      "validation": {
+        "status": "synthetic_only",
+        "checked_at": "2026-11-09T00:00:00Z",
+        "methodology": "Schema and betting replay checks only; no solver or equilibrium computation.",
+        "evidence_reference": "Synthetic demonstration authoring; not mathematical validation.",
+        "limitations": [
+          "Fabricated UI probabilities must never be used as poker recommendations.",
+          "Partial combination coverage; no validated action EV."
+        ],
+        "ev_verified": false
+      },
+      "combinations": [
+        {
+          "cards": [
+            "Ac",
+            "Ad"
+          ],
+          "reach_weight": 1.0,
+          "frequencies": {
+            "fold": 0.1,
+            "check": 0.2,
+            "bet@300": 0.4,
+            "bet@600": 0.3,
+            "all_in@9900": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "As",
+            "Ah"
+          ],
+          "reach_weight": 0.5,
+          "frequencies": {
+            "fold": 0.2,
+            "check": 0.3,
+            "bet@300": 0.25,
+            "bet@600": 0.25,
+            "all_in@9900": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "Kc",
+            "Kd"
+          ],
+          "reach_weight": 1.0,
+          "frequencies": {
+            "fold": 0.1,
+            "check": 0.2,
+            "bet@300": 0.4,
+            "bet@600": 0.3,
+            "all_in@9900": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "Ks",
+            "Kh"
+          ],
+          "reach_weight": 0.5,
+          "frequencies": {
+            "fold": 0.2,
+            "check": 0.3,
+            "bet@300": 0.25,
+            "bet@600": 0.25,
+            "all_in@9900": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "As",
+            "Ks"
+          ],
+          "reach_weight": 1.0,
+          "frequencies": {
+            "fold": 0.1,
+            "check": 0.2,
+            "bet@300": 0.4,
+            "bet@600": 0.3,
+            "all_in@9900": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "Ah",
+            "Kh"
+          ],
+          "reach_weight": 0.5,
+          "frequencies": {
+            "fold": 0.2,
+            "check": 0.3,
+            "bet@300": 0.25,
+            "bet@600": 0.25,
+            "all_in@9900": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "Qc",
+            "Qd"
+          ],
+          "reach_weight": 1.0,
+          "frequencies": {
+            "fold": 0.1,
+            "check": 0.2,
+            "bet@300": 0.4,
+            "bet@600": 0.3,
+            "all_in@9900": 0.0
+          },
+          "action_ev": null
+        },
+        {
+          "cards": [
+            "9s",
+            "9h"
+          ],
+          "reach_weight": 0.5,
+          "frequencies": {
+            "fold": 0.2,
+            "check": 0.3,
+            "bet@300": 0.25,
+            "bet@600": 0.25,
+            "all_in@9900": 0.0
+          },
+          "action_ev": null
+        }
+      ]
+    }
+  ]
+}

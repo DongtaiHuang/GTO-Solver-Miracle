@@ -245,3 +245,6 @@ coverage/
 # Frontend source helpers are not Python build output
 !/frontend/lib/
 !/frontend/lib/*.ts
+
+# Private or licensed strategy imports and local approval records
+.strategy-data/
