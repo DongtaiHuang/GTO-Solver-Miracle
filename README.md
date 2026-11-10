@@ -5,6 +5,10 @@ The description above states the long-term project vision. The current implement
 
 ---
 
+## Task 006B — Opponent-specific river responses
+
+Query a supported river decision in Study to compare equilibrium play and a best response to editable opponent combo probabilities. [Assumptions, EV formulas and reproduction](docs/TASK006B.md).
+
 ## Task 006A — Solver-generated river strategies
 
 Study includes four reviewed decisions from two bounded BTN versus BB river games. Select a river scenario and query it to inspect individual combinations, mixed actions, chip EV and measured equilibrium error. [Solver, ranges, accuracy and reproduction](docs/TASK006A.md).

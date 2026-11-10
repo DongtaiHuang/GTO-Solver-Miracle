@@ -5,6 +5,7 @@ import type { OpponentProfile, ProfileConfig } from "../lib/study-types";
 import type { StrategyResult, StrategyScenarioIndex } from "../lib/strategy-types";
 import { StrategyMatrix, FrequencyChart, actionColor, actionLabel } from "./StrategyMatrix";
 import { StrategyComparison } from "./StrategyComparison";
+import { RiverResponse } from "./RiverResponse";
 import { Card } from "./Card";
 
 export function StrategyWorkspace({ profiles, opponent, onOpponentChange }: {
@@ -138,6 +139,8 @@ export function StrategyWorkspace({ profiles, opponent, onOpponentChange }: {
           <p className="source-id">{visible.scenario.abstraction.tree_id} · {visible.scenario.abstraction.range_model_id}</p></div></div> :
         <p>Complete engine-validated history and exact action sizes appear after a query.</p>}</section>
     <StrategyComparison result={visible} profiles={profiles} opponent={opponent} onChange={onOpponentChange} />
+    {visible?.status==="available" && /^river-(275|550)-(btn|bb)-v1$/.test(visible.source?.solution_id??"") &&
+      <RiverResponse key={visible.scenario_id+opponent.id} scenario={visible.scenario} profile={opponent.id}/>}
     <section className="study-card strategy-provenance" aria-label="Solution provenance"><div className="card-heading"><h2>Coverage & provenance</h2><span className="data-tag">{demo ? "SYNTHETIC ONLY" : "SOURCE AUDIT"}</span></div>
       {visible?.source ? <><dl><dt>Solver</dt><dd>{visible.source.solver_identifier} · {visible.source.solver_version}</dd>
         <dt>Source</dt><dd><a href={visible.source.source_url} target="_blank" rel="noreferrer">{visible.source.source_name}</a></dd>

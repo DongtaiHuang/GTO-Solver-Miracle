@@ -2,6 +2,7 @@ import os
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 
+from poker_lab import exploit
 from poker_lab.strategy_catalog import SolutionCatalog, configured_catalog, strict_json
 from poker_lab.strategy_provider import (
     PrecomputedStrategyProvider,
@@ -33,6 +34,13 @@ def create_strategy_router(catalog: SolutionCatalog | None = None) -> APIRouter:
     router = APIRouter(
         prefix="/api/strategy", tags=["strategy"], dependencies=[Depends(validate_json)]
     )
+
+    @router.post("/exploit")
+    def best_response(body: exploit.Request) -> exploit.Analysis:
+        try:
+            return exploit.analyze(body, registry)
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from None
 
     @router.get("/scenarios", response_model=ScenarioIndex)
     def scenarios() -> ScenarioIndex:

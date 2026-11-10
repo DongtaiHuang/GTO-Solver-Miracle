@@ -76,3 +76,13 @@ test("reviewed river strategy shows mixed bluffs, EV and measured accuracy", asy
   await expect(detail).toContainText("bet@550: 0.000 chips");
   await expect(page.getByLabel("Solution provenance")).toContainText("Best-response gap");
 });
+
+test("river response updates when modeled call rates change", async ({page}) => {
+  await page.goto("/");
+  await page.getByLabel("Supported exact scenario").selectOption("river-550-btn-v1");
+  await page.getByRole("button",{name:"Query exact strategy"}).click();
+  const panel=page.getByRole("region",{name:"Model-conditioned river response"});
+  await panel.getByLabel("KhQh call@550 (%)").fill("0");
+  await panel.getByLabel("KsJs call@550 (%)").fill("0");
+  await expect(panel).toContainText("Gain against model 275.00 chips");
+});

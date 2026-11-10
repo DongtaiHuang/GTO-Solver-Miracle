@@ -11,14 +11,13 @@ import scipy
 from scipy.optimize import linprog
 
 from poker_lab.evaluator import evaluate
+from poker_lab.river_payoff import BOARD, POT, called_payoff, showdown_share
 from poker_lab.strategy_models import Approval, Dataset, ImportedSolution
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "backend/src/poker_lab/data"
 BTN = [("Ac", "Ad"), ("5c", "4c")]
 BB = [("Kh", "Qh"), ("Ks", "Js")]
-BOARD = ["Kd", "7h", "2s", "Tc", "9d"]
-POT = 550
 URL = "https://github.com/DongtaiHuang/GTO-Solver-Miracle"
 POLICIES = np.array(list(itertools.product([0, 1], repeat=2)))
 
@@ -27,7 +26,7 @@ def solve(bet):
     # Constant-sum utility: river pot share less additional investment.
     wins = np.array(
         [
-            [float(evaluate(a + tuple(BOARD)) > evaluate(b + tuple(BOARD))) for b in BB]
+            [showdown_share(a,b) for b in BB]
             for a in BTN
         ]
     )
@@ -37,7 +36,7 @@ def solve(bet):
         for a in BTN
         for b in BB
     )
-    called = wins * (POT + 2 * bet) - bet
+    called = called_payoff(wins,bet)
 
     def payoff(ip, oop):
         return np.where(ip[:, None], np.where(oop, called, POT), wins * POT).mean()

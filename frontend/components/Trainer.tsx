@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { TrainerRiverFeedback } from "./TrainerRiverFeedback";
 import { useProfiles } from "../lib/useProfiles";
 import { OpponentSetup, initialOpponents } from "./OpponentSetup";
 import type { ProfileConfig } from "../lib/study-types";
@@ -78,6 +79,7 @@ export function Trainer() {
           <ActionControls key={`${game.hand_id}-${game.revision}`} legal={game.legal}
             disabled={busy || needsSync || game.actor !== game.hero} onAction={act} />}
       </div><HistoryPanel entries={game.history} /></div>
+      {game.street==="river" && game.actor===game.hero && <TrainerRiverFeedback key={game.hand_id+game.revision} game={game}/>}
       {completed && <p className="session-note">Start a new hand to reset all stacks to 100 BB and rotate the button.</p>}
     </> : <section className="welcome"><div className="welcome-mark">♠</div><h2>{busy ? "Loading your table…" : "Your seat is ready."}</h2>
       <p>Six seats. 100 big blinds. Every decision is yours.</p>
