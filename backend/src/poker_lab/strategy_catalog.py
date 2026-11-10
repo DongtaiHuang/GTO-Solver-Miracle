@@ -8,7 +8,7 @@ from pathlib import Path
 
 from poker_lab.strategy_models import Approval, Dataset, ImportedSolution
 
-MAX_CATALOG_SOLUTIONS = 128
+MAX_CATALOG_SOLUTIONS = 132
 MAX_IMPORT_BYTES = 8 * 1024 * 1024
 
 
@@ -34,7 +34,7 @@ class SolutionCatalog:
 
     def _check(self) -> None:
         if len(self.entries) > MAX_CATALOG_SOLUTIONS:
-            raise ValueError("Catalog exceeds the 128-solution limit")
+            raise ValueError("Catalog exceeds the 132-solution limit")
         ids = [entry.document.solution_id for entry in self.entries]
         keys = [(e.document.kind, e.document.scenario.scenario_id) for e in self.entries]
         if len(set(ids)) != len(ids) or len(set(keys)) != len(keys):
@@ -109,8 +109,10 @@ def import_dataset(
             solution_id TEXT PRIMARY KEY, scenario_id TEXT NOT NULL, kind TEXT NOT NULL,
             entry_json TEXT NOT NULL, UNIQUE(scenario_id, kind))""")
         existing = connection.execute("SELECT COUNT(*) FROM solutions").fetchone()[0]
-        if existing + len(entries) > MAX_CATALOG_SOLUTIONS - 4:
-            raise ValueError("Imported catalog exceeds 124 entries (four slots reserved for demos)")
+        if existing + len(entries) > MAX_CATALOG_SOLUTIONS - 8:
+            raise ValueError(
+                "Imported catalog exceeds 124 entries (eight slots reserved for packaged records)"
+            )
         try:
             connection.executemany(
                 "INSERT INTO solutions VALUES (?, ?, ?, ?)",
@@ -133,6 +135,12 @@ def import_dataset(
 
 def configured_catalog(path: str | None) -> SolutionCatalog:
     demos = demo_catalog()
+    for bet in (275, 550):
+        resource = files("poker_lab").joinpath(f"data/river_{bet}.json")
+        entries = json.loads(resource.read_text(encoding="utf-8"))
+        demos = SolutionCatalog(
+            demos.entries + [ImportedSolution.model_validate(e) for e in entries]
+        )
     if path is None:
         return demos
     imported = load_catalog(Path(path))
