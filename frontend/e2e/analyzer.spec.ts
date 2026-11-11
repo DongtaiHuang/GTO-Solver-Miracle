@@ -32,7 +32,7 @@ test("import a complete history, step through it, inspect exact decisions and ro
  await page.getByRole("button",{name:"Reopen My hand"}).click();
  await expect(page.getByRole("button",{name:/river · BB call 550/})).toBeVisible();
  await page.getByLabel("Import hand JSON").setInputFiles({name:"bad.json",mimeType:"application/json",buffer:Buffer.from('{"version":"2.0"}')});
- await expect(page.getByRole("alert")).toBeVisible();
+ await expect(page.getByRole("main").getByRole("alert").filter({hasText: /Input should be '1\.0'/})).toBeVisible();
  await expect(page.getByRole("button",{name:/river · BB call 550/})).toBeVisible();
 });
 
