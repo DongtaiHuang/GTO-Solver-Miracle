@@ -5,6 +5,10 @@ The description above states the long-term project vision. The current implement
 
 ---
 
+## Task 007 — Hand History Analyzer
+
+Open /analyzer to enter and replay a six-player hand, inspect decisions, calculate equity, and compare supported solver and opponent-model strategies. Completed Trainer hands open through **Review This Hand**. [Hand format, persistence, and validation](docs/TASK007.md).
+
 ## Task 006B — Opponent-specific river responses
 
 Query a supported river decision in Study to compare equilibrium play and a best response to editable opponent combo probabilities. [Assumptions, EV formulas and reproduction](docs/TASK006B.md).

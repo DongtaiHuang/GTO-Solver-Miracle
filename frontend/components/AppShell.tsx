@@ -5,7 +5,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
   const links = [{ href: "/", title: "Study", icon: "◈", note: "Ranges & models" },
     { href: "/trainer", title: "Trainer", icon: "♠", note: "Practice full hands" },
-    { href: "/hand-analyzer", title: "Hand Analyzer", icon: "≡", note: "Review workspace" }];
+    { href: "/analyzer", title: "Hand Analyzer", icon: "≡", note: "Review workspace" }];
   return <div className="app-shell"><aside className="app-sidebar">
     <Link href="/" className="brand-lockup"><span className="brand-mark">M</span>
       <span>MIRACLE<small>POKER STRATEGY LAB</small></span></Link>
