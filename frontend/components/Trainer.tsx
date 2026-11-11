@@ -66,7 +66,7 @@ export function Trainer() {
     <OpponentSetup profiles={profiles} configs={opponents} onChange={setOpponents}
       disabled={busy || profiles.length !== 5 || (!!game && !completed)} />
     {game && <div className="trainer-study-link"><Link href="/?from=trainer">Open this hand in Study ↗</Link>
-      <span>Visible cards, positions, pot, bets, and history only</span></div>}
+      <span>Visible cards, positions, pot, bets, and history only</span>{completed && <Link href="/analyzer?from=trainer">Review This Hand</Link>}</div>}
     {error && <div className="error-banner" role="alert">{error}
       <button disabled={busy} onClick={() => void refresh()}>Refresh table</button></div>}
     {game ? <>

@@ -4,11 +4,12 @@ from contextlib import contextmanager
 
 from fastapi import FastAPI, HTTPException, Request, Response
 
+from poker_lab import analyzer
 from poker_lab.equity_api import create_equity_router
 from poker_lab.profiles import OpponentProfile, default_profiles
 from poker_lab.schemas import GameView, HeroAction, NewHandRequest
 from poker_lab.strategy_api import create_strategy_router
-from poker_lab.strategy_catalog import SolutionCatalog
+from poker_lab.strategy_catalog import SolutionCatalog, configured_catalog, strict_json
 from poker_lab.study import StudyRequest, StudyResult, analyze, study_current
 from poker_lab.trainer import CapacityReached, MissingSession, SessionStore, StaleHand
 
@@ -94,7 +95,26 @@ def create_app(
             return study_current(sessions.get(request.cookies.get(COOKIE)))
 
     app.include_router(create_equity_router())
-    app.include_router(create_strategy_router(strategy_catalog))
+    registry = strategy_catalog or configured_catalog(os.environ.get("STRATEGY_CATALOG"))
+    app.include_router(create_strategy_router(registry))
+
+    @app.post("/api/analyzer/replay")
+    async def replay_hand(request: Request, body: analyzer.Hand) -> list[analyzer.Snapshot]:
+        with errors():
+            strict_json((await request.body()).decode("utf-8"))
+            return analyzer.replay(
+                body,
+                [
+                    (e.document.solution_id, e.document.scenario)
+                    for e in registry.visible("validated_gto")
+                ],
+            )
+
+    @app.get("/api/analyzer/trainer")
+    def review_trainer(request: Request) -> analyzer.Hand:
+        with errors():
+            return analyzer.from_trainer(sessions.get(request.cookies.get(COOKIE)))
+
     return app
 
 
