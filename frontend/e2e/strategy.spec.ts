@@ -4,7 +4,7 @@ test("exact strategy lookup keeps synthetic data opt-in and displays combo-speci
   await page.goto("/");
   const matrix = page.getByRole("group", { name: "GTO strategy matrix", exact: true });
   await expect(matrix.getByRole("button")).toHaveCount(169);
-  await expect(page.getByText(/4 public approved scenarios/)).toBeVisible();
+  await expect(page.getByText(/9 public approved scenarios/)).toBeVisible();
   const demo = page.getByRole("checkbox", { name: /Show synthetic examples/ });
   await expect(demo).not.toBeChecked();
   await expect(page.getByRole("button", { name: "AA strategy unavailable", exact: true })).toBeVisible();
@@ -44,14 +44,14 @@ test("exact strategy lookup keeps synthetic data opt-in and displays combo-speci
   await expect(status).toContainText("GTO solution unavailable");
   await expect(page.getByRole("button", { name: "AA strategy unavailable", exact: true })).toBeVisible();
   await demo.uncheck();
-  await expect(page.getByText(/4 public approved scenarios/)).toBeVisible();
+  await expect(page.getByText(/9 public approved scenarios/)).toBeVisible();
   await expect(page.getByText("SYNTHETIC DEMONSTRATION — NOT GTO")).toHaveCount(0);
 });
 
 test("strategy dashboard is usable on mobile and retains the range/equity workspace", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
-  await expect(page.getByText(/4 public approved scenarios/)).toBeVisible();
+  await expect(page.getByText(/9 public approved scenarios/)).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.getByRole("checkbox", { name: /Show synthetic examples/ }).check();
   await page.getByLabel("Supported exact scenario").selectOption("synthetic-ui-flop-v1");
@@ -85,4 +85,20 @@ test("river response updates when modeled call rates change", async ({page}) => 
   await panel.getByLabel("KhQh call@550 (%)").fill("0");
   await panel.getByLabel("KsJs call@550 (%)").fill("0");
   await expect(panel).toContainText("Gain against model 275.00 chips");
+});
+
+test("expanded solver exposes exact raise targets and measured accuracy", async ({page})=>{
+  await page.goto("/");
+  await page.getByLabel("Supported exact scenario").selectOption("cfr-river-root-v1");
+  await page.getByRole("button",{name:"Query exact strategy"}).click();
+  const colors = page.locator(".strategy-action-legend span").filter({hasText:/bet to/}).locator("i");
+  await expect(colors).toHaveCount(2);
+  expect(await colors.evaluateAll(items=>new Set(items.map(item=>getComputedStyle(item).backgroundColor)).size)).toBe(2);
+  await page.getByLabel("Supported exact scenario").selectOption("cfr-river-bet275-v1");
+  await page.getByRole("button",{name:"Query exact strategy"}).click();
+  await expect(page.getByLabel("Solution provenance")).toContainText("CFR+");
+  await expect(page.getByLabel("Solution provenance")).toContainText("BR gap");
+  await page.getByRole("button",{name:/KQs strategy coverage/}).click();
+  await expect(page.getByLabel("Selected hand strategy")).toContainText("raise@1650:");
+  await expect(page.getByLabel("Model-conditioned river response")).toHaveCount(0);
 });

@@ -1,9 +1,16 @@
 import { rangeMatrix } from "../lib/ranges";
 import type { StrategyActionView, ClassStrategy } from "../lib/strategy-types";
 
-export function actionColor(action: StrategyActionView, index: number): string {
+export function actionColor(action: StrategyActionView, actions: StrategyActionView[]): string {
+  if (action.action === "bet" || action.action === "raise") {
+    const sizes = actions.filter(a => a.action === action.action).sort((a,b) => a.amount! - b.amount!);
+    if (sizes.length > 1) {
+      const fraction = sizes.findIndex(a => a.key === action.key) / (sizes.length - 1);
+      return `hsl(${action.action === "bet" ? 38 : 12} 62% ${70 - 30 * fraction}%)`;
+    }
+  }
   return { fold: "#596578", check: "#609ac2", call: "#80b997", bet: "#d1a164",
-    raise: "#c97e68", all_in: "#b17ca7" }[action.action] ?? (index % 2 ? "#ab9cce" : "#8cad9c");
+    raise: "#c97e68", all_in: "#b17ca7" }[action.action] ?? "#8cad9c";
 }
 export function actionLabel(action: StrategyActionView): string {
   return action.action.replaceAll("_", " ") + (action.amount !== null ?
@@ -21,9 +28,9 @@ export function StrategyMatrix({ classes, actions, selected, onSelect, demo }: {
       return <button type="button" key={hand} className={`strategy-cell ${hand === selected ? "strategy-selected" : ""}`}
         aria-label={`${hand} ${record ? `strategy coverage ${record.represented_combos}/${record.unblocked_combos}` : "strategy unavailable"}`}
         aria-pressed={hand === selected} onClick={() => onSelect(hand)}>
-        <span className="strategy-segments" aria-hidden="true">{record && actions.map((action,i) =>
+        <span className="strategy-segments" aria-hidden="true">{record && actions.map((action) =>
           <i key={action.key} style={{ width: `${(record.frequencies[action.key] ?? 0) * 100}%`,
-            backgroundColor: actionColor(action,i) }} />)}</span><b>{hand}</b>
+            backgroundColor: actionColor(action,actions) }} />)}</span><b>{hand}</b>
       </button>;
     })}
   </div></div>;
@@ -31,9 +38,9 @@ export function StrategyMatrix({ classes, actions, selected, onSelect, demo }: {
 export function FrequencyChart({ frequencies, actions, label }: {
   frequencies: Record<string, number> | null; actions: StrategyActionView[]; label: string;
 }) {
-  return <div className="frequency-chart" aria-label={label}>{frequencies ? actions.map((action,i) =>
+  return <div className="frequency-chart" aria-label={label}>{frequencies ? actions.map((action) =>
     <div className="frequency-row" key={action.key}><div><span>{actionLabel(action)}</span>
       <b>{((frequencies[action.key] ?? 0) * 100).toFixed(1)}%</b></div>
-      <div className="frequency-track"><i style={{ width: `${(frequencies[action.key] ?? 0) * 100}%`, backgroundColor: actionColor(action,i) }} /></div>
+      <div className="frequency-track"><i style={{ width: `${(frequencies[action.key] ?? 0) * 100}%`, backgroundColor: actionColor(action,actions) }} /></div>
     </div>) : <p className="unavailable-value">GTO solution unavailable</p>}</div>;
 }

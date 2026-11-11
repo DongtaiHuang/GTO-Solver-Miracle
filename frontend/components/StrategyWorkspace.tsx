@@ -108,8 +108,8 @@ export function StrategyWorkspace({ profiles, opponent, onOpponentChange }: {
       <span className="data-tag">{visible?.status === "available" ? "REVIEWED SOURCE" : demo ? "DEMO ONLY" : "NO VALIDATED MATCH"}</span></div>
       <StrategyMatrix classes={visible?.classes ?? []} actions={visible?.actions ?? []}
         selected={selectedHand} demo={demo} onSelect={hand => { setSelectedHand(hand); setSelectedCombo(""); }} />
-      <div className="strategy-action-legend">{visible?.actions.map((action,i) => <span key={action.key}>
-        <i style={{ backgroundColor: actionColor(action,i) }} />{actionLabel(action)}</span>)}</div>
+      <div className="strategy-action-legend">{visible?.actions.map((action) => <span key={action.key}>
+        <i style={{ backgroundColor: actionColor(action,visible.actions) }} />{actionLabel(action)}</span>)}</div>
       <p className="field-hint">Color segments show action frequencies, not range inclusion. Blank cells mean uncovered combinations.
         {demo ? " All displayed segments are synthetic." : " Only exact, approved and permitted records can fill cells."}</p></section>
       <section className="study-card selected-strategy" aria-label="Selected hand strategy"><div className="card-heading"><h2>{selectedHand} details</h2>
