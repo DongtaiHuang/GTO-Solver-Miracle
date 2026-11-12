@@ -5,6 +5,10 @@ The description above states the long-term project vision. The current implement
 
 ---
 
+## Task 008 — Expanded river strategies
+
+Study and Hand Analyzer include five additional solver decisions for weighted eight-combo ranges, two simultaneous bet sizes and a raise to 1,650 chips. [Solver accuracy, benchmarks and reproduction](docs/TASK008.md).
+
 ## Task 007 — Hand History Analyzer
 
 Open /analyzer to enter and replay a six-player hand, inspect decisions, calculate equity, and compare supported solver and opponent-model strategies. Completed Trainer hands open through **Review This Hand**. [Hand format, persistence, and validation](docs/TASK007.md).

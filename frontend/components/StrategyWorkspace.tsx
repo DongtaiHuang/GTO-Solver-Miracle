@@ -3,9 +3,10 @@ import { useEffect, useRef, useState } from "react";
 import { requestJson } from "../lib/api";
 import type { OpponentProfile, ProfileConfig } from "../lib/study-types";
 import type { StrategyResult, StrategyScenarioIndex } from "../lib/strategy-types";
-import { StrategyMatrix, FrequencyChart, actionColor, actionLabel } from "./StrategyMatrix";
+import { StrategyMatrix, actionColor, actionLabel } from "./StrategyMatrix";
 import { StrategyComparison } from "./StrategyComparison";
 import { RiverResponse } from "./RiverResponse";
+import { HandActions } from "./HandActions";
 import { Card } from "./Card";
 
 export function StrategyWorkspace({ profiles, opponent, onOpponentChange }: {
@@ -60,6 +61,7 @@ export function StrategyWorkspace({ profiles, opponent, onOpponentChange }: {
         { scenario, mode: demo ? "synthetic_demo" : "validated_gto" }, controller.signal);
       if (!controller.signal.aborted && currentKey.current === queryKey) {
         resultKey.current = queryKey; setResult(data);
+        setSelectedHand(hand => data.classes.some(c=>c.hand_class===hand) ? hand : data.classes[0]?.hand_class ?? hand);
       }
     } catch (err) {
       if (!controller.signal.aborted && currentKey.current === queryKey)
@@ -68,12 +70,6 @@ export function StrategyWorkspace({ profiles, opponent, onOpponentChange }: {
   }
   return <div className={`strategy-workspace ${demo ? "synthetic-workspace" : ""}`}>
     <section className="study-card solver-scenario" aria-label="Exact strategy scenario">
-      <div className="card-heading"><div><p className="eyebrow">EXACT STRATEGY LOOKUP</p><h2>Match the whole situation.</h2></div>
-        <span className="data-tag">{demo ? "SYNTHETIC UI EXAMPLES" : "PERMITTED SOLVER DATA"}</span></div>
-      <p>Full betting history, stacks, exact board, and sizing abstraction must match.
-        Free-form Study notes and equity are never used to guess a solution.</p>
-      <label className="demo-switch"><input type="checkbox" checked={demo} onChange={e => changeMode(e.target.checked)} />
-        Show synthetic examples (UI only, not GTO)</label>
       {demo && <div className="demo-notice" role="note"><b>SYNTHETIC DEMONSTRATION — NOT GTO</b>
         <p>All example probabilities are fabricated to demonstrate the interface, not recommendations.
           Synthetic examples cannot be promoted to validated baselines or supply action EV.</p></div>}
@@ -87,31 +83,30 @@ export function StrategyWorkspace({ profiles, opponent, onOpponentChange }: {
           {index?.scenarios.map(s => <option key={s.solution_id} value={s.solution_id}>{s.label}</option>)}
         </select></label><button className="primary" onClick={() => void query()} disabled={busy}>
           {busy ? "Looking up strategy…" : "Query exact strategy"}</button></div>
-      <p className="coverage-message">{index?.scenarios.length ?? 0} {demo ? "synthetic examples" : "public approved scenarios"} · {index?.message ?? "Loading coverage catalog…"}</p>
-      <details className="scenario-json"><summary>Complete scenario configuration (JSON)</summary>
-        <label className="field">Exact scenario JSON<textarea rows={16} value={scenarioText}
-          onChange={e => { setSelectedScenario(""); setScenarioText(e.target.value); }} spellCheck={false} /></label>
-        <p className="field-hint">A strict versioned schema is validated against the poker engine. No fuzzy board, history, position,
-          or bet-size substitutions are made. Paste a complete permitted scenario when no supported entry exists.</p></details>
+      <div className="lookup-options">      <label className="demo-switch"><input type="checkbox" checked={demo} onChange={e => changeMode(e.target.checked)} />
+        Show synthetic examples (UI only, not GTO)</label>
+<small className="coverage-message">{index ? index.scenarios.length+" "+(demo?"synthetic examples":"public approved scenarios") : "Loading scenarios…"}</small></div>
+
       {error && <div role="alert" className="error-banner">{error}</div>}
-      {preview && <div className="strategy-node-summary"><span>{preview.game_format} · {preview.players} players</span>
-        <span>{preview.hero_position} vs {preview.opponent_position} · {preview.street}</span>
-        <span>Blinds {preview.small_blind}/{preview.big_blind} · ante {preview.ante} · effective {preview.effective_stack} chips · pot {preview.pot}</span>
-        <div className="board">{board.map((card,i) => <Card key={i} value={card} />)}</div></div>}
+      {preview && <div className="strategy-node-summary">
+        <div className="node-position"><small>{preview.game_format}</small><b>{preview.hero_position} vs {preview.opponent_position}</b></div>
+        <div className="node-board"><small>{preview.street}</small><div className="board">{board.map(card => <Card key={card} value={card}/>)}</div></div>
+        <div><small>Pot</small><b>{preview.pot} chips</b></div>
+        <div title="Smaller remaining stack between these players"><small>Effective stack</small><b>{preview.effective_stack} chips</b></div>
+        <div><small>Blinds / ante</small><b>{preview.small_blind}/{preview.big_blind} · {preview.ante}</b></div>
+      </div>}
       {visible && <div className={`strategy-status ${visible.status}`} role="status" aria-label="Strategy coverage status">
-        <strong>{visible.message}</strong><p>{visible.represented_combos} represented / {visible.unblocked_combos} unblocked combinations.
-          Partial coverage never implies a fold recommendation for missing hands.</p>
-        <p className="source-id">Scenario {visible.scenario_id}</p></div>}
+        <strong>{visible.status==="available"?"Exact solver match":visible.message}</strong><span>{visible.represented_combos} represented / {visible.unblocked_combos} unblocked combos</span>
+</div>}
     </section>
 
     <div className="strategy-data-grid"><section className="study-card"><div className="card-heading"><h2>{demo ? "Synthetic strategy matrix" : "GTO strategy matrix"}</h2>
       <span className="data-tag">{visible?.status === "available" ? "REVIEWED SOURCE" : demo ? "DEMO ONLY" : "NO VALIDATED MATCH"}</span></div>
       <StrategyMatrix classes={visible?.classes ?? []} actions={visible?.actions ?? []}
         selected={selectedHand} demo={demo} onSelect={hand => { setSelectedHand(hand); setSelectedCombo(""); }} />
-      <div className="strategy-action-legend">{visible?.actions.map((action,i) => <span key={action.key}>
-        <i style={{ backgroundColor: actionColor(action,i) }} />{actionLabel(action)}</span>)}</div>
-      <p className="field-hint">Color segments show action frequencies, not range inclusion. Blank cells mean uncovered combinations.
-        {demo ? " All displayed segments are synthetic." : " Only exact, approved and permitted records can fill cells."}</p></section>
+      <div className="strategy-action-legend">{visible?.actions.map((action) => <span key={action.key}>
+        <i style={{ backgroundColor: actionColor(action,visible.actions) }} />{actionLabel(action)}</span>)}</div>
+      <p className="field-hint">Striped cells have no coverage. Use arrow keys to inspect neighboring hands.</p></section>
       <section className="study-card selected-strategy" aria-label="Selected hand strategy"><div className="card-heading"><h2>{selectedHand} details</h2>
         <span className="data-tag">{demo ? "SYNTHETIC" : visible?.status === "available" ? "SOURCE DATA" : "UNAVAILABLE"}</span></div>
         {selectedClass ? <>
@@ -120,28 +115,36 @@ export function StrategyWorkspace({ profiles, opponent, onOpponentChange }: {
           <label className="field">Inspect combination<select aria-label="Inspect combination" value={selectedCombo} onChange={e => setSelectedCombo(e.target.value)}>
             <option value="">Class reach-weighted mean</option>{combos.map(c =>
               <option key={c.cards.join("")} value={c.cards.join("")}>{c.cards.join(" ")} · reach {c.reach_weight}</option>)}</select></label>
-          <FrequencyChart frequencies={detail?.frequencies ?? selectedClass.frequencies} actions={visible?.actions ?? []}
-            label={demo ? "Synthetic selected-hand probabilities" : "Selected-hand action probabilities"} />
-          <h3>Action EV</h3>{(detail ? detail.action_ev : selectedClass.action_ev) ? <ul>
-            {Object.entries((detail ? detail.action_ev : selectedClass.action_ev)!).map(([action,ev]) =>
-              <li key={action}>{action}: {ev.toFixed(3)} chips</li>)}</ul> :
-            <p>Validated action EV unavailable. Equity is not substituted for strategy EV.</p>}
-        </> : <p>No strategy data for represented, unblocked combinations of this class. GTO solution unavailable.</p>}
-        <p className="field-hint">{visible?.aggregation_method ?? "Select an exact scenario and query a source."}</p>
+          <HandActions actions={visible?.actions??[]} frequencies={detail?.frequencies??selectedClass.frequencies}
+            ev={detail?detail.action_ev:selectedClass.action_ev}/>
+          {!(detail?detail.action_ev:selectedClass.action_ev) && <p>Validated action EV unavailable.</p>}
+        </> : <p>{visible ? "No strategy data for this class in the selected scenario." : "Select a scenario and query its strategy to inspect this hand."}</p>}
+        <p className="field-hint" title="A combination is one exact pair of hole cards. Reach is its relative weight at this decision.">Class averages weight each covered combo by its reach.</p>
+        <a className="compare-link" href="#study-comparison">Compare opponent strategies ↓</a>
       </section></div>
 
-    <section className="study-card"><div className="card-heading"><h2>Betting history & action abstraction</h2><span className="data-tag">EXACT NODE</span></div>
+    <section id="study-comparison" className="comparison-workspace" tabIndex={-1}><div className="comparison-toolbar"><h2>Opponent comparison</h2>
+      <label>Archetype <select aria-label="Comparison archetype" value={opponent.id} onChange={e=>{const next=profiles.find(p=>p.id===e.target.value);if(next)onOpponentChange({id:next.id,parameters:next.parameters});}}>{profiles.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select></label></div>
+    <StrategyComparison result={visible} profiles={profiles} opponent={opponent} onChange={onOpponentChange} />
+    {visible?.status==="available" && /^river-(275|550)-(btn|bb)-v1$/.test(visible.source?.solution_id??"") &&
+      <RiverResponse study heroCombo={detail?.cards.join("")} key={visible.scenario_id+opponent.id} scenario={visible.scenario} profile={opponent.id}/>}
+    </section>
+    <details className="study-card research-panel"><summary>Betting history &amp; action abstraction</summary>
       {visible ? <div className="history-abstraction"><ol>{visible.scenario.history.length ? visible.scenario.history.map((event,i) =>
         <li key={i}>{i+1}. {event.street}: {event.position} {event.action}{event.amount !== null ? ` ${event.amount}` : ""}</li>) :
         <li>No voluntary actions before this initial decision.</li>}</ol>
         <div><h3>Allowed sizes</h3>{visible.actions.map(action => <p key={action.key}>{actionLabel(action)}</p>)}
           <h3>Abstraction assumptions</h3><ul>{visible.scenario.abstraction.assumptions.map(a => <li key={a}>{a}</li>)}</ul>
           <p className="source-id">{visible.scenario.abstraction.tree_id} · {visible.scenario.abstraction.range_model_id}</p></div></div> :
-        <p>Complete engine-validated history and exact action sizes appear after a query.</p>}</section>
-    <StrategyComparison result={visible} profiles={profiles} opponent={opponent} onChange={onOpponentChange} />
-    {visible?.status==="available" && /^river-(275|550)-(btn|bb)-v1$/.test(visible.source?.solution_id??"") &&
-      <RiverResponse key={visible.scenario_id+opponent.id} scenario={visible.scenario} profile={opponent.id}/>}
-    <section className="study-card strategy-provenance" aria-label="Solution provenance"><div className="card-heading"><h2>Coverage & provenance</h2><span className="data-tag">{demo ? "SYNTHETIC ONLY" : "SOURCE AUDIT"}</span></div>
+        <p>Complete engine-validated history and exact action sizes appear after a query.</p>}</details>
+      <details className="scenario-json"><summary>Complete scenario configuration (JSON)</summary>
+        <label className="field">Exact scenario JSON<textarea rows={16} value={scenarioText}
+          onChange={e => { setSelectedScenario(""); setScenarioText(e.target.value); }} spellCheck={false} /></label>
+        <p className="field-hint">A strict versioned schema is validated against the poker engine. No fuzzy board, history, position,
+          or bet-size substitutions are made. Paste a complete permitted scenario when no supported entry exists.</p></details>
+    <section className="study-card strategy-provenance" aria-label="Solution provenance">
+    <details><summary>Coverage &amp; provenance</summary>
+      {visible && <p className="source-id">Scenario {visible.scenario_id}</p>}
       {visible?.source ? <><dl><dt>Solver</dt><dd>{visible.source.solver_identifier} · {visible.source.solver_version}</dd>
         <dt>Source</dt><dd><a href={visible.source.source_url} target="_blank" rel="noreferrer">{visible.source.source_name}</a></dd>
         <dt>License / redistribution</dt><dd><a href={visible.source.license_url} target="_blank" rel="noreferrer">{visible.source.license_name}</a> · {visible.source.redistribution}</dd>
@@ -149,6 +152,6 @@ export function StrategyWorkspace({ profiles, opponent, onOpponentChange }: {
         <dt>Checked / imported</dt><dd>{visible.source.checked_at} / {visible.source.imported_at}</dd></dl>
         <p>{visible.source.mathematical_verification}</p><ul>{visible.source.limitations.map(x => <li key={x}>{x}</li>)}</ul></> :
         <p>No public approved source matched this complete scenario. No confidential catalog entries are disclosed.</p>}
-    </section>
+    </details></section>
   </div>;
 }

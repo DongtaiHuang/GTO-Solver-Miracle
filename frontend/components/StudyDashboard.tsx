@@ -85,20 +85,19 @@ export function StudyDashboard() {
     setLocked(false);
     if (activeRange === "hero") setHeroWeights(next); else setOpponentWeights(next);
   }
-  return <main className="study-page">
-    <header className="study-header"><div><p className="eyebrow">STUDY WORKSPACE / 6-MAX CASH</p>
-      <h1>Build the picture.<br /><span>Question the assumptions.</span></h1>
-      <p>A full-hand workspace for ranges, opponent models, and transparent strategy sources.</p></div>
-      <button className="import-button" onClick={() => { setViewMode("ranges"); void importCurrent(); }} disabled={viewMode === "ranges" && loading}>Import trainer hand ↗</button></header>
-    <div className="study-view-switch" role="group" aria-label="Study workspace mode">
-      <button aria-pressed={viewMode === "strategy"} onClick={() => setViewMode("strategy")}>Strategy visualization</button>
-      <button aria-pressed={viewMode === "ranges"} onClick={() => setViewMode("ranges")}>Range editing & equity</button>
-    </div>
+  return <main className="study-page study-lab">
+    <header className="lab-toolbar"><h1>Study</h1>
+      <div className="study-view-switch" role="group" aria-label="Study workspace mode">
+        <button aria-pressed={viewMode === "strategy"} onClick={() => setViewMode("strategy")}>Strategy visualization</button>
+        <button aria-pressed={viewMode === "ranges"} onClick={() => setViewMode("ranges")}>Range editing & equity</button>
+      </div>
+      <button className="import-button" onClick={() => { setViewMode("ranges"); void importCurrent(); }} disabled={viewMode === "ranges" && loading}>Import trainer hand ↗</button>
+    </header>
     {viewMode === "ranges" && <div className="study-banner"><span className="status-dot" /><div><b>GTO solution unavailable</b>
       <p>Model ranges and inspect card facts today. GTO strategy frequencies and solver action EV are unavailable. Calculate showdown equity separately against explicit assumptions.</p></div>
       <span className="data-tag unavailable">EXACT MATCH REQUIRED</span></div>}
     {(error || importError || profileError) && <div className="error-banner" role="alert">{error || importError || profileError}</div>}
-    <div className="profile-comparison" role="group" aria-label="Compare opponent archetypes">
+    {viewMode === "ranges" && <div className="profile-comparison" role="group" aria-label="Compare opponent archetypes">
       {profiles.map(profile => {
         const params = opponent.id === profile.id ? opponent.parameters ?? profile.parameters : profile.parameters;
         return <button key={profile.id} aria-pressed={opponent.id === profile.id}
@@ -107,7 +106,7 @@ export function StudyDashboard() {
           {profile.id === "standard_gto" ? "Standard GTO" : profile.id.toUpperCase()}
           <small>{params ? `VPIP ${params.vpip}% · PFR ${params.pfr}%` : "Not solver-backed"}</small>
         </button>;
-      })}</div>
+      })}</div>}
     {viewMode === "strategy" ? <StrategyWorkspace profiles={profiles} opponent={opponent}
       onOpponentChange={next => { setOpponent(next); setOpponentWeights(null); }} /> : <>
     <section className="study-card spot-panel" aria-label="Study situation">

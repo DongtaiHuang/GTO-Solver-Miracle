@@ -46,7 +46,7 @@ def test_complete_replay_and_exact_decisions():
         assert s.actor == e.position and s.street == e.street and e.action in s.legal.actions
         assert s.players["BB"].cards is None
         assert len(s.board) == {"preflop": 0, "flop": 3, "turn": 4, "river": 5}[s.street]
-    assert states[-2].candidates == ["river-550-bb-v1"]
+    assert states[-2].candidates == ["river-550-bb-v1", "cfr-river-bet550-v1"]
     assert states[-2].odds == pytest.approx(1 / 3)
     assert states[-1].payouts == {"BTN": 1650} and states[-1].players["BB"].cards == ("Kh", "Qh")
     changed = sample()

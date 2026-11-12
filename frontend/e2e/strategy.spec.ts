@@ -4,7 +4,7 @@ test("exact strategy lookup keeps synthetic data opt-in and displays combo-speci
   await page.goto("/");
   const matrix = page.getByRole("group", { name: "GTO strategy matrix", exact: true });
   await expect(matrix.getByRole("button")).toHaveCount(169);
-  await expect(page.getByText(/4 public approved scenarios/)).toBeVisible();
+  await expect(page.getByText(/9 public approved scenarios/)).toBeVisible();
   const demo = page.getByRole("checkbox", { name: /Show synthetic examples/ });
   await expect(demo).not.toBeChecked();
   await expect(page.getByRole("button", { name: "AA strategy unavailable", exact: true })).toBeVisible();
@@ -44,14 +44,14 @@ test("exact strategy lookup keeps synthetic data opt-in and displays combo-speci
   await expect(status).toContainText("GTO solution unavailable");
   await expect(page.getByRole("button", { name: "AA strategy unavailable", exact: true })).toBeVisible();
   await demo.uncheck();
-  await expect(page.getByText(/4 public approved scenarios/)).toBeVisible();
+  await expect(page.getByText(/9 public approved scenarios/)).toBeVisible();
   await expect(page.getByText("SYNTHETIC DEMONSTRATION — NOT GTO")).toHaveCount(0);
 });
 
 test("strategy dashboard is usable on mobile and retains the range/equity workspace", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
-  await expect(page.getByText(/4 public approved scenarios/)).toBeVisible();
+  await expect(page.getByText(/9 public approved scenarios/)).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.getByRole("checkbox", { name: /Show synthetic examples/ }).check();
   await page.getByLabel("Supported exact scenario").selectOption("synthetic-ui-flop-v1");
@@ -73,7 +73,7 @@ test("reviewed river strategy shows mixed bluffs, EV and measured accuracy", asy
   await page.getByRole("button", { name: "54s strategy coverage 1/4" }).click();
   const detail = page.getByRole("region", { name: "Selected hand strategy" });
   await expect(detail).toContainText("50.0%");
-  await expect(detail).toContainText("bet@550: 0.000 chips");
+  await expect(detail.getByRole("row").filter({hasText:"bet to 550"})).toContainText("0.000");
   await expect(page.getByLabel("Solution provenance")).toContainText("Best-response gap");
 });
 
@@ -82,7 +82,47 @@ test("river response updates when modeled call rates change", async ({page}) => 
   await page.getByLabel("Supported exact scenario").selectOption("river-550-btn-v1");
   await page.getByRole("button",{name:"Query exact strategy"}).click();
   const panel=page.getByRole("region",{name:"Model-conditioned river response"});
+  await panel.getByText("Edit river probabilities",{exact:true}).click();
   await panel.getByLabel("KhQh call@550 (%)").fill("0");
   await panel.getByLabel("KsJs call@550 (%)").fill("0");
   await expect(panel).toContainText("Gain against model 275.00 chips");
+});
+
+test("expanded solver exposes exact raise targets and measured accuracy", async ({page})=>{
+  await page.goto("/");
+  await page.getByLabel("Supported exact scenario").selectOption("cfr-river-root-v1");
+  await page.getByRole("button",{name:"Query exact strategy"}).click();
+  const colors = page.locator(".strategy-action-legend span").filter({hasText:/bet to/}).locator("i");
+  await expect(colors).toHaveCount(2);
+  expect(await colors.evaluateAll(items=>new Set(items.map(item=>getComputedStyle(item).backgroundColor)).size)).toBe(2);
+  await page.getByLabel("Supported exact scenario").selectOption("cfr-river-bet275-v1");
+  await page.getByRole("button",{name:"Query exact strategy"}).click();
+  await expect(page.getByLabel("Solution provenance")).toContainText("CFR+");
+  await expect(page.getByLabel("Solution provenance")).toContainText("BR gap");
+  await page.getByRole("button",{name:/KQs strategy coverage/}).click();
+  await expect(page.getByLabel("Selected hand strategy").getByRole("rowheader",{name:"raise to 1650"})).toBeVisible();
+  await expect(page.getByLabel("Model-conditioned river response")).toHaveCount(0);
+});
+
+
+test("desktop study workspace fits the matrix and EVs and supports arrow-key selection",async({page})=>{
+  await page.setViewportSize({width:1440,height:900});
+  await page.goto("/");
+  await page.getByLabel("Supported exact scenario").selectOption("river-550-btn-v1");
+  await page.getByRole("button",{name:"Query exact strategy"}).click();
+  const matrix=page.getByRole("group",{name:"GTO strategy matrix"});
+  const table=page.getByRole("table",{name:"Selected hand action frequencies and EV"});
+  await expect(table).toBeVisible();
+  for(const item of [matrix,table,page.getByRole("link",{name:/Compare opponent strategies/})]){
+    const box=await item.boundingBox();
+    expect(box!.y+box!.height).toBeLessThan(900);
+  }
+  const aa=matrix.getByRole("button",{name:/^AA strategy coverage/});
+  await aa.focus(); await page.keyboard.press("ArrowRight");
+  await expect(matrix.getByRole("button",{name:"AKs strategy unavailable"})).toBeFocused();
+  await expect(page.getByRole("region",{name:"Selected hand strategy"})).toContainText("No strategy data");
+  await page.keyboard.press("Home"); await expect(aa).toBeFocused();
+  await page.getByRole("link",{name:/Compare opponent strategies/}).click();
+  await page.getByLabel("Comparison archetype").selectOption("lp");
+  await expect(page.getByLabel("KhQh call@550 (%)")).toHaveValue("90");
 });

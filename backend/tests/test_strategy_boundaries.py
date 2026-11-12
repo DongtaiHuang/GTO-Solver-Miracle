@@ -71,9 +71,9 @@ def test_configured_catalog_does_not_publish_unapproved_import(tmp_path: Path) -
     path = tmp_path / "catalog.db"
     import_dataset(dataset(review_candidate()), path)
     registry = configured_catalog(str(path))
-    assert len(registry.entries) == 9
-    assert all(e.document.solution_id.startswith("river-") for e in registry.visible("validated_gto"))
-    assert len(configured_catalog(None).entries) == 8
+    assert len(registry.entries) == 14
+    assert all(e.document.solution_id.startswith(("river-", "cfr-river-")) for e in registry.visible("validated_gto"))
+    assert len(configured_catalog(None).entries) == 13
     with pytest.raises(ValueError, match="Duplicate"):
         SolutionCatalog(demo_catalog().entries * 2)
 
