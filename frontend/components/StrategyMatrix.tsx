@@ -23,11 +23,20 @@ export function StrategyMatrix({ classes, actions, selected, onSelect, demo }: {
   const byClass = new Map(classes.map(c => [c.hand_class,c]));
   return <div className="matrix-scroll"><div className="range-matrix strategy-matrix" role="group"
     aria-label={demo ? "Synthetic strategy matrix" : "GTO strategy matrix"}>
-    {rangeMatrix.flat().map(hand => {
+    {rangeMatrix.flat().map((hand,index) => {
       const record = byClass.get(hand);
       return <button type="button" key={hand} className={`strategy-cell ${hand === selected ? "strategy-selected" : ""}`}
         aria-label={`${hand} ${record ? `strategy coverage ${record.represented_combos}/${record.unblocked_combos}` : "strategy unavailable"}`}
-        aria-pressed={hand === selected} onClick={() => onSelect(hand)}>
+        tabIndex={hand===selected?0:-1} data-covered={Boolean(record)}
+        title={record ? actions.map(a=>actionLabel(a)+": "+(record.frequencies[a.key]*100).toFixed(1)+"%").join(" · ") : hand+" · No coverage"}
+        onKeyDown={e=>{
+          const steps:Record<string,number>={ArrowLeft:-1,ArrowRight:1,ArrowUp:-13,ArrowDown:13,Home:-index,End:168-index};
+          if(!(e.key in steps))return;
+          e.preventDefault();
+          const next=Math.max(0,Math.min(168,index+steps[e.key]));
+          const button=e.currentTarget.parentElement?.querySelectorAll("button")[next];
+          button?.focus(); onSelect(rangeMatrix.flat()[next]);
+        }} aria-pressed={hand === selected} onClick={() => onSelect(hand)}>
         <span className="strategy-segments" aria-hidden="true">{record && actions.map((action) =>
           <i key={action.key} style={{ width: `${(record.frequencies[action.key] ?? 0) * 100}%`,
             backgroundColor: actionColor(action,actions) }} />)}</span><b>{hand}</b>

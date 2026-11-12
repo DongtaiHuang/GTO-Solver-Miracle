@@ -243,3 +243,65 @@ footer { margin-top: 30px; padding-top: 18px; border-top: 1px solid #24303a; col
 .analyzer-table>div {background:#15252a;border:1px solid #40534f;border-radius:8px;padding:10px;min-width:0;overflow-wrap:anywhere}
 .analyzer-table .acting {outline:2px solid #d6c084}.analyzer-table .board {justify-content:start;margin:6px 0}.analyzer-table .card {width:28px;height:38px;font-size:12px}
 @media(max-width:680px){.analyzer-table{grid-template-columns:repeat(2,minmax(0,1fr));border-radius:16px}.analyzer-seat-edit{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Study workbench */
+.study-lab {padding:16px clamp(12px,2vw,28px) 40px}
+.lab-toolbar,.comparison-toolbar,.lookup-options {display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.lab-toolbar {border-bottom:1px solid #34464e;padding-bottom:12px;margin-bottom:12px}
+.lab-toolbar h1 {font-size:24px;letter-spacing:-.04em;margin:0}
+.lab-toolbar .study-view-switch {border:0;padding:0;margin:0;gap:4px;background:#0c171d;border-radius:8px}
+.lab-toolbar button {padding:8px 12px}
+.lab-toolbar .import-button {margin-left:auto}
+.study-lab .strategy-workspace {gap:12px}
+.study-lab .synthetic-workspace {padding-left:8px}
+.study-lab .strategy-workspace .study-card {padding:14px 16px}
+.study-lab .scenario-query-row {margin:0;gap:10px}
+.study-lab .lookup-options {justify-content:space-between;margin:8px 0 0}
+.lookup-options .demo-switch {margin:0;color:#c5ccc3}
+.lookup-options small {color:#a2b4bd}
+.study-lab .strategy-node-summary {margin:10px 0 0;padding:10px 12px;gap:10px 24px;align-items:center}
+.strategy-node-summary small {display:block;text-transform:uppercase;font-size:10px;letter-spacing:.06em;color:#a9bdb7;margin-bottom:3px}
+.strategy-node-summary > div > b {color:#e3eee8;font-size:14px;font-variant-numeric:tabular-nums}
+.strategy-node-summary .node-board {display:flex;align-items:center;gap:8px}
+.strategy-node-summary .node-board .card {width:29px;height:35px}
+.study-lab .strategy-status {border:none;padding:0;display:flex;gap:10px;flex-wrap:wrap;margin:8px 0 0;font-size:11px}
+.strategy-status.available strong {color:#acd894}.strategy-status span {color:#adbec4}
+.study-lab .strategy-data-grid {grid-template-columns:minmax(0,1.52fr) minmax(260px,1fr);gap:12px}
+.study-lab .card-heading {margin-bottom:10px}
+.study-lab .strategy-data-grid h2,.comparison-toolbar h2 {font-size:17px;letter-spacing:-.02em}
+.study-lab .strategy-cell {aspect-ratio:auto;height:clamp(25px,3.85vh,40px);font-variant-numeric:tabular-nums;font-size:clamp(11px,.95vw,15px);color:#f6fafa}
+.strategy-cell[data-covered="false"] {background:repeating-linear-gradient(135deg,#18262d 0 5px,#1c2a31 5px 6px);color:#afc1c9}
+.strategy-cell[data-covered="true"] b {background:#122029d9;border-radius:3px;padding:1px 3px}
+.study-lab .strategy-selected {outline:2px solid #e6edae;outline-offset:-2px}
+.study-lab :focus-visible {outline:3px solid #a1dbff;outline-offset:2px}
+.study-lab .strategy-cell:focus-visible {outline-offset:-3px}
+.study-lab .strategy-action-legend {margin:10px 0 5px;font-size:11px;gap:6px 14px}
+.study-lab .field-hint {color:#acbcc0;line-height:1.45;margin:6px 0;font-size:11px}
+.study-lab .selected-strategy>p {line-height:1.45;margin:7px 0}
+.hand-actions {width:100%;border-collapse:collapse;font-size:13px;margin:14px 0;font-variant-numeric:tabular-nums}
+.hand-actions th,.hand-actions td {padding:8px 5px;border-bottom:1px solid #30414a;text-align:left}
+.hand-actions thead th {font-size:11px;color:#aec0c8;font-weight:500}
+.hand-actions td:last-child,.hand-actions th:last-child {text-align:right}
+.hand-actions tbody th {font-weight:500;text-transform:capitalize}
+.action-meter {display:block;width:100%;height:4px;background:#30414a;margin-top:3px;border-radius:2px;overflow:hidden}
+.action-meter i {display:block;height:100%}
+.compare-link {display:inline-block;margin-top:10px;color:#cbe8ac;font-weight:600;font-size:13px;text-underline-offset:4px}
+.comparison-workspace {border-top:2px solid #68826f;padding-top:12px;scroll-margin:12px}
+.comparison-toolbar {justify-content:space-between;margin-bottom:10px}
+.comparison-toolbar h2 {margin:0}.comparison-toolbar label {color:#afc3c6;font-size:12px}
+.comparison-toolbar select {margin-left:5px;padding:6px;color:#dcdfd7;background:#15262b;border:1px solid #41545e;border-radius:4px}
+.comparison-workspace>.study-card {margin-top:10px}
+.comparison-workspace .strategy-comparison {gap:12px}
+.study-lab .strategy-workspace summary {cursor:pointer;color:#c4d5ce;font-size:13px}
+.study-lab .scenario-json {margin:0;border:1px solid #2a3942;border-radius:10px;background:#121d24;padding:14px 16px}
+@media(max-width:900px){.study-lab .strategy-data-grid{grid-template-columns:minmax(0,1.3fr) minmax(220px,1fr)}}
+@media(max-width:760px){.study-lab .strategy-data-grid{grid-template-columns:minmax(0,1fr)}.lab-toolbar{gap:8px}.lab-toolbar .import-button{margin-left:0}.study-lab .strategy-workspace .study-card{padding:12px}.study-lab .scenario-query-row{grid-template-columns:minmax(0,1fr) auto}.strategy-node-summary .node-board{flex-wrap:wrap}.study-lab .range-matrix.strategy-matrix{min-width:0;gap:2px}.study-lab .strategy-cell{font-size:10px;height:28px}.strategy-cell[data-covered="true"] b{padding:0}.study-lab .strategy-node-summary{gap:8px 14px}.lab-toolbar .study-view-switch button{font-size:11px}}
+
+.strategy-node-summary .node-board .card {flex-direction:row;align-items:center;justify-content:center;gap:1px;width:33px;height:31px;padding:2px}
+.strategy-node-summary .node-board .card b {align-self:center;color:inherit;font-size:14px}
+.study-response h3,.study-response h4 {margin:0 0 8px;font-size:15px}
+.policy-summary {display:flex;gap:8px 18px;flex-wrap:wrap;color:#b9cdcd;font-size:12px;margin:8px 0}
+.policy-summary b {color:#edf2ee}.response-combo {border-top:1px solid #33464d;margin-top:12px;padding-top:12px}
+.response-combo .hand-actions {margin:4px 0}.response-combo caption {text-align:left;font-size:11px;color:#adc4c0}
+.study-response .response-combo p {margin:4px 0}
+.study-response details .field {max-width:280px}

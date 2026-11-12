@@ -22,18 +22,18 @@ export function StrategyComparison({ result, profiles, opponent, onChange }: {
         {result?.source ? ` Source: ${result.source.solver_identifier} ${result.source.solver_version}.` : " No exact permitted source matched."}</p>
       <p className="field-hint">Source metadata and local approval are not an independent proof of equilibrium.</p>
     </div>
-    <div className="study-card"><div className="card-heading"><h2>Opponent model</h2><span className="data-tag modeled">ASSUMPTIONS</span></div>
+    <div className="study-card"><div className="card-heading"><h2>{current?.name ?? "Opponent model"}</h2><span className="data-tag modeled">ASSUMPTIONS</span></div>
       <p>{current?.description ?? "Select an opponent profile."}</p>
-      {params ? <dl className="model-parameter-summary">{Object.entries(parameterLabels).map(([key,label]) =>
-        <div key={key}><dt>{label}</dt><dd>{params[key as keyof typeof params]}%</dd></div>)}</dl> :
-        <p>{result?.status==="available" && /^river-(275|550)-(btn|bb)-v1$/.test(result.source?.solution_id??"")
-          ? "Standard GTO uses the paired equilibrium combo policy at this river decision."
-          : "Standard GTO is not yet solver-backed. No statistical parameters or opponent action frequencies are invented."}</p>}
       <p className="comparison-boundary">These are modeled parameters, not solver action frequencies.
         {result?.status==="available" && /^river-(275|550)-(btn|bb)-v1$/.test(result.source?.solution_id??"")
           ? "The river response below uses separate, combo-specific river assumptions."
           : "No exploitative best response, expected profit, or opponent-specific optimal EV has been calculated."}</p>
       <details><summary>Edit opponent assumptions</summary>
+      {params ? <dl className="model-parameter-summary">{Object.entries(parameterLabels).map(([key,label]) =>
+        <div key={key}><dt>{label}</dt><dd>{params[key as keyof typeof params]}%</dd></div>)}</dl> :
+        <p>{result?.status==="available" && /^river-(275|550)-(btn|bb)-v1$/.test(result.source?.solution_id??"")
+          ? "Standard GTO uses the paired equilibrium combo policy at this river decision."
+          : "Standard GTO is not yet solver-backed. No statistical parameters or opponent action frequencies are invented."}</p>}
         <ProfileEditor profiles={profiles} value={opponent} onChange={onChange} /></details>
     </div>
   </section>;

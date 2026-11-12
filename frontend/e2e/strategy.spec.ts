@@ -73,7 +73,7 @@ test("reviewed river strategy shows mixed bluffs, EV and measured accuracy", asy
   await page.getByRole("button", { name: "54s strategy coverage 1/4" }).click();
   const detail = page.getByRole("region", { name: "Selected hand strategy" });
   await expect(detail).toContainText("50.0%");
-  await expect(detail).toContainText("bet@550: 0.000 chips");
+  await expect(detail.getByRole("row").filter({hasText:"bet to 550"})).toContainText("0.000");
   await expect(page.getByLabel("Solution provenance")).toContainText("Best-response gap");
 });
 
@@ -82,6 +82,7 @@ test("river response updates when modeled call rates change", async ({page}) => 
   await page.getByLabel("Supported exact scenario").selectOption("river-550-btn-v1");
   await page.getByRole("button",{name:"Query exact strategy"}).click();
   const panel=page.getByRole("region",{name:"Model-conditioned river response"});
+  await panel.getByText("Edit river probabilities",{exact:true}).click();
   await panel.getByLabel("KhQh call@550 (%)").fill("0");
   await panel.getByLabel("KsJs call@550 (%)").fill("0");
   await expect(panel).toContainText("Gain against model 275.00 chips");
@@ -99,6 +100,29 @@ test("expanded solver exposes exact raise targets and measured accuracy", async 
   await expect(page.getByLabel("Solution provenance")).toContainText("CFR+");
   await expect(page.getByLabel("Solution provenance")).toContainText("BR gap");
   await page.getByRole("button",{name:/KQs strategy coverage/}).click();
-  await expect(page.getByLabel("Selected hand strategy")).toContainText("raise@1650:");
+  await expect(page.getByLabel("Selected hand strategy").getByRole("rowheader",{name:"raise to 1650"})).toBeVisible();
   await expect(page.getByLabel("Model-conditioned river response")).toHaveCount(0);
+});
+
+
+test("desktop study workspace fits the matrix and EVs and supports arrow-key selection",async({page})=>{
+  await page.setViewportSize({width:1440,height:900});
+  await page.goto("/");
+  await page.getByLabel("Supported exact scenario").selectOption("river-550-btn-v1");
+  await page.getByRole("button",{name:"Query exact strategy"}).click();
+  const matrix=page.getByRole("group",{name:"GTO strategy matrix"});
+  const table=page.getByRole("table",{name:"Selected hand action frequencies and EV"});
+  await expect(table).toBeVisible();
+  for(const item of [matrix,table,page.getByRole("link",{name:/Compare opponent strategies/})]){
+    const box=await item.boundingBox();
+    expect(box!.y+box!.height).toBeLessThan(900);
+  }
+  const aa=matrix.getByRole("button",{name:/^AA strategy coverage/});
+  await aa.focus(); await page.keyboard.press("ArrowRight");
+  await expect(matrix.getByRole("button",{name:"AKs strategy unavailable"})).toBeFocused();
+  await expect(page.getByRole("region",{name:"Selected hand strategy"})).toContainText("No strategy data");
+  await page.keyboard.press("Home"); await expect(aa).toBeFocused();
+  await page.getByRole("link",{name:/Compare opponent strategies/}).click();
+  await page.getByLabel("Comparison archetype").selectOption("lp");
+  await expect(page.getByLabel("KhQh call@550 (%)")).toHaveValue("90");
 });
