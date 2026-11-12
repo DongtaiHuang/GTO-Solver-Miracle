@@ -6,6 +6,7 @@ import type {Event,Hand,Snapshot} from "../lib/analyzer";
 import type {StrategyResult,StrategyScenarioIndex} from "../lib/strategy-types";
 import type {ProfileId} from "../lib/study-types";
 import type {EquityResult} from "../lib/equity-types";
+import {PracticeReview} from "./PracticeReview";
 import {MultiResponse} from "./MultiResponse";
 import {RiverResponse} from "./RiverResponse";
 
@@ -42,6 +43,7 @@ export function DecisionReview({hand,state,recorded}:{hand:Hand;state:Snapshot;r
  <p>{strategy.source?.validation_methodology}</p>{combo?<ul>{Object.entries(combo.frequencies).map(([a,f])=><li key={a}>{a}: {(100*f).toFixed(1)}% · EV {combo.action_ev?.[a]?.toFixed(2)??"unavailable"} chips</li>)}</ul>:
  <><p>Acting hand unknown or outside the represented range. Reach-weighted source range:</p>
  <ul>{Object.entries(strategy.frequencies??{}).map(([a,f])=><li key={a}>{a} {(100*f).toFixed(1)}% · EV {strategy.action_ev?.[a]?.toFixed(2)??"unavailable"} chips</li>)}</ul></>}
+ {recorded&&combo&&state.actor===hand.hero&&strategy.status==="available"&&strategy.source&&<PracticeReview source={strategy.source.solution_id} scenario={strategy.scenario_id} combo={combo.cards.join("")} action={actionKey} hand={hand} index={hand.actions.indexOf(recorded)}/>}
  {recorded&&<p>{evMap&&completeEV&&evMap[actionKey]!==undefined ?
  "Recorded action "+actionKey+" costs "+(Math.max(...Object.values(evMap))-evMap[actionKey]).toFixed(2)+" chips versus the highest action EV in this tree." :
  "Individual EV loss unavailable for this hand and recorded action."}</p>}

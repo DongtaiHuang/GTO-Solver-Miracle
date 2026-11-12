@@ -129,6 +129,7 @@ export function StrategyWorkspace({ profiles, opponent, onOpponentChange }: {
           {!(detail?detail.action_ev:selectedClass.action_ev) && <p>Validated action EV unavailable.</p>}
         </> : <p>{visible ? "No strategy data for this class in the selected scenario." : "Select a scenario and query its strategy to inspect this hand."}</p>}
         <p className="field-hint" title="A combination is one exact pair of hole cards. Reach is its relative weight at this decision.">Class averages weight each covered combo by its reach.</p>
+        {visible?.status==="available" && visible.source && detail && <a className="button-link" href={"/training?source="+visible.source.solution_id+"&scenario="+visible.scenario_id+"&combo="+detail.cards.join("")}>Practice this combination</a>}
         <a className="compare-link" href="#study-comparison">Compare opponent strategies ↓</a>
       </section></div>
 
