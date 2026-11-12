@@ -1,9 +1,10 @@
 import os
+from collections.abc import Iterator
 from threading import BoundedSemaphore
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 
-from poker_lab import exploit, multistreet
+from poker_lab import exploit, multistreet, training
 from poker_lab.strategy_catalog import SolutionCatalog, configured_catalog, strict_json
 from poker_lab.strategy_provider import (
     PrecomputedStrategyProvider,
@@ -37,6 +38,42 @@ def create_strategy_router(catalog: SolutionCatalog | None = None) -> APIRouter:
     )
 
     capacity = BoundedSemaphore(2)
+
+    @router.get("/training/exercises")
+    def exercises() -> list[training.Prompt]:
+        return training.exercises(registry)
+
+    def training_capacity() -> Iterator[None]:
+        if not capacity.acquire(blocking=False):
+            raise HTTPException(429, "Training calculation capacity reached")
+        try:
+            yield
+        finally:
+            capacity.release()
+
+    @router.post("/training/grade", dependencies=[Depends(training_capacity)])
+    def grade(body: training.Submission) -> training.Feedback:
+        return training.grade(registry, body)
+
+    @router.post("/training/report", dependencies=[Depends(training_capacity)])
+    def report(body: training.Archive) -> training.VerifiedArchive:
+        try:
+            metrics = training.summarize(body)
+            for attempt in body.attempts:
+                req = attempt.submission
+                entry = registry.source(req.solution_id, "validated_gto")
+                if (
+                    not entry
+                    or entry.document.content_hash != req.version
+                    or entry.document.scenario.scenario_id != req.scenario_id
+                    or entry.document.scenario.street != attempt.street
+                    or entry.document.scenario.hero_position != attempt.position
+                    or training.grade(registry, req) != attempt.feedback
+                ):
+                    raise ValueError("Attempt cannot be verified against its original source")
+            return training.VerifiedArchive(archive=body, report=metrics)
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from None
 
     @router.post("/multistreet-policy")
     def policy_rows(body: multistreet.Context) -> dict[str, dict[str, dict[str, float]]]:

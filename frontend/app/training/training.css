@@ -1,0 +1,43 @@
+.training-center {
+  padding: clamp(1rem, 3vw, 3rem);
+  max-width: 82rem;
+  margin: auto;
+  display: grid;
+  gap: 1rem;
+}
+.training-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: 0.65rem;
+}
+.training-stats h2 {
+  margin: 0.35rem 0;
+}
+.training-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.training-center label {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0.5rem 0;
+}
+.training-center fieldset {
+  min-width: 0;
+}
+.training-center select,
+.training-center input {
+  max-width: 100%;
+}
+.training-center button {
+  margin: 0.35rem 0.35rem 0.35rem 0;
+}
+.training-center summary {
+  cursor: pointer;
+  padding: 0.45rem 0;
+}
+.training-center section,
+.training-center details {
+  overflow-wrap: anywhere;
+}

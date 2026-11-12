@@ -10,6 +10,8 @@ class PolicyBodyLimit:
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] != "http" or scope["path"] not in (
+            "/api/strategy/training/grade",
+            "/api/strategy/training/report",
             "/api/strategy/multistreet",
             "/api/strategy/multistreet-policy",
         ):

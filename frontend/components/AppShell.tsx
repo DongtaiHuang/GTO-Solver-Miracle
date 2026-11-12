@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 export function AppShell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
   const links = [{ href: "/", title: "Study", icon: "◈", note: "Ranges & models" },
+    { href: "/training", title: "Training Center", icon: "◎", note: "Decision practice" },
     { href: "/trainer", title: "Trainer", icon: "♠", note: "Practice full hands" },
     { href: "/analyzer", title: "Hand Analyzer", icon: "≡", note: "Review workspace" }];
   return <div className="app-shell"><aside className="app-sidebar">

@@ -90,6 +90,10 @@ export function MultiResponse({strategy,profile,combos,selection}:{strategy:Stra
  <p><b>Root gain {fmt(result.root.gain)}</b> · Cost against equilibrium {fmt(result.root.equilibrium_cost)}</p>
  <h4>Selected decision · conditional chips</h4>
  {result.decisions.filter(d=>!combos||combos.includes(d.combo)).map(d=><div key={d.combo}><b>{d.combo}</b>
+ {d.response_model && context.solution_id && <a className="button-link" href={"/training?"+new URLSearchParams({
+   source:context.solution_id,scenario:strategy.scenario_id,combo:d.combo,policy:JSON.stringify(profile==="standard_gto"?{name:result.name,profile}:{
+     name:result.name,profile,opening_bet:Math.max(0,Math.min(100,bet+(result.name==="Lower opening bet"?-15:result.name==="Higher opening bet"?15:0)))/100,overrides:edits})
+ })}>Practice against this hypothesis</a>}
  <p>Baseline against model: {d.baseline_model?rates(d.baseline_model.frequencies)+" · EV "+fmt(d.baseline_model.ev):"Unreachable"}</p>
  <p>Best response: {d.response_model?rates(d.response_model.frequencies)+" · EV "+fmt(d.response_model.ev):"Unreachable"}</p>
  <p>Conditional gain {fmt(d.gain)} · equilibrium cost {fmt(d.equilibrium_cost)}</p>

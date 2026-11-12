@@ -15,12 +15,18 @@ test("import a complete history, step through it, inspect exact decisions and ro
  await page.getByRole("button",{name:/river · BTN bet 550/}).click();
  await page.getByLabel("Analyze under these solver ranges and tree").selectOption("river-550-btn-v1");
  await expect(page.getByText(/Recorded action bet@550 costs/)).toBeVisible();
+ const practice=page.getByRole("link",{name:"Practice Similar Spot"});
+ await expect(practice).toHaveAttribute("href",/source=river-550-btn-v1/);
+ await expect(page.getByRole("button",{name:"Review recorded action in Training Center"})).toBeVisible();
  const link=page.getByRole("link",{name:"Inspect this decision in Study"});
  const study=await page.context().newPage();
  await study.goto((await link.getAttribute("href"))!);
  await expect(study.getByLabel("Supported exact scenario")).toHaveValue("river-550-btn-v1");
  await study.getByRole("button",{name:"Query exact strategy"}).click();
  await expect(study.getByRole("status",{name:"Strategy coverage status"})).toContainText("Exact solver match");
+ await study.getByLabel("Inspect combination").selectOption("AcAd");
+ await study.getByRole("link",{name:"Practice this combination"}).click();
+ await expect(study.getByRole("heading",{name:/BTN · AcAd/})).toBeVisible();
  await study.close();
  await page.getByLabel("Opponent model",{exact:true}).selectOption("lp");
  await expect(page.getByLabel("KhQh call@550 (%)")).toHaveValue("90");
