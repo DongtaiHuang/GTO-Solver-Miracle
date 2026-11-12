@@ -1,8 +1,9 @@
 import os
+from threading import BoundedSemaphore
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 
-from poker_lab import exploit
+from poker_lab import exploit, multistreet
 from poker_lab.strategy_catalog import SolutionCatalog, configured_catalog, strict_json
 from poker_lab.strategy_provider import (
     PrecomputedStrategyProvider,
@@ -34,6 +35,26 @@ def create_strategy_router(catalog: SolutionCatalog | None = None) -> APIRouter:
     router = APIRouter(
         prefix="/api/strategy", tags=["strategy"], dependencies=[Depends(validate_json)]
     )
+
+    capacity = BoundedSemaphore(2)
+
+    @router.post("/multistreet-policy")
+    def policy_rows(body: multistreet.Context) -> dict[str, dict[str, dict[str, float]]]:
+        try:
+            return multistreet.policy_rows(body, registry)
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from None
+
+    @router.post("/multistreet")
+    def multistreet_response(body: multistreet.Request) -> multistreet.Analysis:
+        if not capacity.acquire(blocking=False):
+            raise HTTPException(429, "Response calculation capacity reached")
+        try:
+            return multistreet.analyze(body, registry)
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from None
+        finally:
+            capacity.release()
 
     @router.post("/exploit")
     def best_response(body: exploit.Request) -> exploit.Analysis:

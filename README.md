@@ -5,6 +5,10 @@ The description above states the long-term project vision. The current implement
 
 ---
 
+## Task 011 — Multi-street response comparisons
+
+Study and Hand Analyzer can evaluate either acting seat on the reviewed Task 009 records against explicit conditional opponent policies. [Full-tree reference, EV comparisons and worked example](docs/TASK011.md).
+
 ## Task 010 — Adaptive opponent modeling
 
 Open **Opponent observations** in Trainer, Analyzer, or Study to inspect replay-derived opportunities, uncertainty, and provisional archetypes. [Definitions, identity mapping, and tab-local archive](docs/TASK010.md).

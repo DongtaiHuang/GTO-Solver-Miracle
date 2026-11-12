@@ -5,6 +5,7 @@ import type { OpponentProfile, ProfileConfig } from "../lib/study-types";
 import type { StrategyResult, StrategyScenarioIndex } from "../lib/strategy-types";
 import { StrategyMatrix, actionColor, actionLabel } from "./StrategyMatrix";
 import { StrategyComparison } from "./StrategyComparison";
+import {MultiResponse} from "./MultiResponse";
 import { RiverResponse } from "./RiverResponse";
 import { HandActions } from "./HandActions";
 import { Card } from "./Card";
@@ -134,6 +135,9 @@ export function StrategyWorkspace({ profiles, opponent, onOpponentChange }: {
     <section id="study-comparison" className="comparison-workspace" tabIndex={-1}><div className="comparison-toolbar"><h2>Opponent comparison</h2>
       <label>Archetype <select aria-label="Comparison archetype" value={opponent.id} onChange={e=>{const next=profiles.find(p=>p.id===e.target.value);if(next)onOpponentChange({id:next.id,parameters:next.parameters});}}>{profiles.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select></label></div>
     <StrategyComparison result={visible} profiles={profiles} opponent={opponent} onChange={onOpponentChange} />
+    {visible?.status==="available" && visible.source?.solution_id.startsWith("ts-") &&
+      <MultiResponse key={visible.scenario_id+opponent.id} strategy={visible} profile={opponent.id} selection={{hand:selectedHand,select:hand=>{setSelectedHand(hand);setSelectedCombo("");}}}
+        combos={detail?[detail.cards.join("")]:combos.map(c=>c.cards.join(""))}/>}
     {visible?.status==="available" && /^river-(275|550)-(btn|bb)-v1$/.test(visible.source?.solution_id??"") &&
       <RiverResponse study heroCombo={detail?.cards.join("")} key={visible.scenario_id+opponent.id} scenario={visible.scenario} profile={opponent.id}/>}
     </section>
