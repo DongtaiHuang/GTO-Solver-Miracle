@@ -174,6 +174,6 @@ export function StudyDashboard() {
     }} />
     <StrategyPanels result={result} pending={loading} />
     </>}
-    <OpponentIntelligence/>
+    <OpponentIntelligence onHypothesis={id=>{setOpponent({id});setOpponentWeights(null);setViewMode("strategy");}}/>
   </main>;
 }

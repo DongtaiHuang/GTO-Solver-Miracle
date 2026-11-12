@@ -6,6 +6,7 @@ import type {Event,Hand,Snapshot} from "../lib/analyzer";
 import type {StrategyResult,StrategyScenarioIndex} from "../lib/strategy-types";
 import type {ProfileId} from "../lib/study-types";
 import type {EquityResult} from "../lib/equity-types";
+import {MultiResponse} from "./MultiResponse";
 import {RiverResponse} from "./RiverResponse";
 
 export function DecisionReview({hand,state,recorded}:{hand:Hand;state:Snapshot;recorded?:Event}){
@@ -44,6 +45,7 @@ export function DecisionReview({hand,state,recorded}:{hand:Hand;state:Snapshot;r
  {recorded&&<p>{evMap&&completeEV&&evMap[actionKey]!==undefined ?
  "Recorded action "+actionKey+" costs "+(Math.max(...Object.values(evMap))-evMap[actionKey]).toFixed(2)+" chips versus the highest action EV in this tree." :
  "Individual EV loss unavailable for this hand and recorded action."}</p>}
+ {strategy.status==="available"&&strategy.source?.solution_id.startsWith("ts-")&&<MultiResponse key={strategy.scenario_id+profile} strategy={strategy} profile={profile} combos={combo?[combo.cards.join("")]:actor?.cards?[]:undefined}/>}
  {strategy.source?.solution_id.startsWith("river-")&&(combo||!actor?.cards)&&<RiverResponse key={profile+strategy.scenario_id} scenario={strategy.scenario} profile={profile} heroCombo={combo?.cards.join("")}/>}</>}
  {err&&<p role="alert">{err}</p>}</fieldset>
 }

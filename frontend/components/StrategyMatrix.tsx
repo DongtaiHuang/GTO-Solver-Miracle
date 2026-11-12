@@ -16,13 +16,13 @@ export function actionLabel(action: StrategyActionView): string {
   return action.action.replaceAll("_", " ") + (action.amount !== null ?
     ` ${action.action === "bet" || action.action === "raise" || action.action === "all_in" ? "to " : ""}${action.amount}` : "");
 }
-export function StrategyMatrix({ classes, actions, selected, onSelect, demo }: {
+export function StrategyMatrix({ classes, actions, selected, onSelect, demo, label }: {
   classes: ClassStrategy[]; actions: StrategyActionView[]; selected: string;
-  onSelect: (hand: string) => void; demo: boolean;
+  onSelect: (hand: string) => void; demo: boolean; label?: string;
 }) {
   const byClass = new Map(classes.map(c => [c.hand_class,c]));
   return <div className="matrix-scroll"><div className="range-matrix strategy-matrix" role="group"
-    aria-label={demo ? "Synthetic strategy matrix" : "GTO strategy matrix"}>
+    aria-label={label??(demo ? "Synthetic strategy matrix" : "GTO strategy matrix")}>
     {rangeMatrix.flat().map((hand,index) => {
       const record = byClass.get(hand);
       return <button type="button" key={hand} className={`strategy-cell ${hand === selected ? "strategy-selected" : ""}`}

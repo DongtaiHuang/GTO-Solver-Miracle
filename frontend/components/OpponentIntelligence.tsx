@@ -9,7 +9,7 @@ const labels:Record<string,string>={vpip:"VPIP",pfr:"PFR",three_bet:"3-bet",fold
 const pct=(v:number|null)=>v===null?"—":(100*v).toFixed(1)+"%";
 const archetypes=["tag","lag","tp","lp"] as const;
 
-export function OpponentIntelligence({hand,onAdopt}:{hand?:Hand;onAdopt?:(seat:number,id:Archetype)=>void}){
+export function OpponentIntelligence({hand,onAdopt,onHypothesis}:{onHypothesis?:(id:Archetype)=>void;hand?:Hand;onAdopt?:(seat:number,id:Archetype)=>void}){
  const [open,setOpen]=useState(false),[tick,setTick]=useState(0),[reports,setReports]=useState<Report[]>([]);
  const [selected,setSelected]=useState(""),[error,setError]=useState(""),[message,setMessage]=useState(""),[busy,setBusy]=useState(false);
  const [handId,setHandId]=useState(""),[mapping,setMapping]=useState<Partial<Record<Pos,string>>>({});
@@ -78,6 +78,7 @@ export function OpponentIntelligence({hand,onAdopt}:{hand?:Hand;onAdopt?:(seat:n
  <label className="field">Manual label override<select aria-label="Manual label override" value={player.override??""} onChange={e=>{
  const value=e.target.value as Archetype|"";void commit(a=>{const overrides={...a.overrides};if(value)overrides[player.id]=value;else delete overrides[player.id];return {...a,overrides};},"Label updated.");}}>
  <option value="">Use inferred label</option>{archetypes.map(v=><option key={v} value={v}>{v.toUpperCase()}</option>)}</select></label>
+ {onHypothesis&&(player.override||player.provisional)&&<button onClick={()=>{onHypothesis((player.override??player.provisional)!);setMessage("Hypothesis selected. Query a supported scenario and calculate the response in Opponent comparison.");}}>Use this label as a modeling hypothesis</button>}
  {onAdopt&&/^bot-[1-5]$/.test(player.id)&&player.source==="trainer"&&player.provisional&&
  <button onClick={()=>{onAdopt(Number(player.id.slice(4)),player.provisional!);setMessage("Preset selected for the next hand.");}}>Use inferred {player.provisional.toUpperCase()} preset next hand</button>}
  <div className="stat-scroll"><table className="hand-actions"><caption>Observed actions and Beta(1,1) posterior estimates</caption>

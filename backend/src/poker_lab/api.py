@@ -10,6 +10,7 @@ from poker_lab.profiles import OpponentProfile, default_profiles
 from poker_lab.schemas import GameView, HeroAction, NewHandRequest
 from poker_lab.strategy_api import create_strategy_router
 from poker_lab.strategy_catalog import SolutionCatalog, configured_catalog, strict_json
+from poker_lab.strategy_limits import PolicyBodyLimit
 from poker_lab.study import StudyRequest, StudyResult, analyze, study_current
 from poker_lab.trainer import CapacityReached, MissingSession, SessionStore, StaleHand
 
@@ -126,6 +127,7 @@ def create_app(
             strict_json(raw.decode("utf-8"))
             return observations.report(body)
 
+    app.add_middleware(PolicyBodyLimit)
     return app
 
 

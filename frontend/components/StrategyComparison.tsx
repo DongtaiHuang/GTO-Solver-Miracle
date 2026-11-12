@@ -27,13 +27,13 @@ export function StrategyComparison({ result, profiles, opponent, onChange }: {
       <p className="comparison-boundary">These are modeled parameters, not solver action frequencies.
         {result?.status==="available" && /^river-(275|550)-(btn|bb)-v1$/.test(result.source?.solution_id??"")
           ? "The river response below uses separate, combo-specific river assumptions."
-          : "No exploitative best response, expected profit, or opponent-specific optimal EV has been calculated."}</p>
+          : result?.status==="available" && result.source?.solution_id.startsWith("ts-") ? "Select a conditional policy below to calculate a full-tree response." : "No exploitative best response, expected profit, or opponent-specific optimal EV has been calculated."}</p>
       <details><summary>Edit opponent assumptions</summary>
       {params ? <dl className="model-parameter-summary">{Object.entries(parameterLabels).map(([key,label]) =>
         <div key={key}><dt>{label}</dt><dd>{params[key as keyof typeof params]}%</dd></div>)}</dl> :
         <p>{result?.status==="available" && /^river-(275|550)-(btn|bb)-v1$/.test(result.source?.solution_id??"")
           ? "Standard GTO uses the paired equilibrium combo policy at this river decision."
-          : "Standard GTO is not yet solver-backed. No statistical parameters or opponent action frequencies are invented."}</p>}
+          : result?.status==="available" && result.source?.solution_id.startsWith("ts-") ? "Standard GTO uses the complete Task 009 equilibrium reference." : "Standard GTO is not yet solver-backed. No statistical parameters or opponent action frequencies are invented."}</p>}
         <ProfileEditor profiles={profiles} value={opponent} onChange={onChange} /></details>
     </div>
   </section>;

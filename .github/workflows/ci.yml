@@ -70,4 +70,4 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install -e './backend[dev]' scipy==1.15.3 numpy==2.4.6
-      - run: python -m pytest -q tools/test_river_cfr.py tools/test_turn_cfr.py
+      - run: python -m pytest -q tools
