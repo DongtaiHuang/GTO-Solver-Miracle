@@ -15,6 +15,13 @@ test("import a complete history, step through it, inspect exact decisions and ro
  await page.getByRole("button",{name:/river · BTN bet 550/}).click();
  await page.getByLabel("Analyze under these solver ranges and tree").selectOption("river-550-btn-v1");
  await expect(page.getByText(/Recorded action bet@550 costs/)).toBeVisible();
+ const link=page.getByRole("link",{name:"Inspect this decision in Study"});
+ const study=await page.context().newPage();
+ await study.goto((await link.getAttribute("href"))!);
+ await expect(study.getByLabel("Supported exact scenario")).toHaveValue("river-550-btn-v1");
+ await study.getByRole("button",{name:"Query exact strategy"}).click();
+ await expect(study.getByRole("status",{name:"Strategy coverage status"})).toContainText("Exact solver match");
+ await study.close();
  await page.getByLabel("Opponent model",{exact:true}).selectOption("lp");
  await expect(page.getByLabel("KhQh call@550 (%)")).toHaveValue("90");
  await page.getByLabel("Heads-up equity assumption").selectOption("AA KK QQ AKs");
@@ -38,12 +45,17 @@ test("import a complete history, step through it, inspect exact decisions and ro
 
 test("manual action entry follows the engine and hidden cards remain hidden",async({page})=>{
  await page.setViewportSize({width:390,height:844});
- await page.goto("/analyzer");await page.getByText("Enter or edit hand",{exact:true}).click();
+ await page.goto("/analyzer");
+ await expect(page.getByRole("combobox",{name:"Hero position",exact:true})).toBeVisible();
+ const advanced=page.getByText("Advanced setup · six seats",{exact:true});
+ await advanced.focus(); await page.keyboard.press("Enter");
+ await page.getByLabel("HJ name",{exact:true}).fill("Morgan");
+ await advanced.click();
  await page.getByLabel("BTN cards",{exact:true}).fill("As Kd");
  await page.getByRole("button",{name:"Validate hand"}).click();
  await page.getByRole("button",{name:"Record fold",exact:true}).click();
  await expect(page.getByRole("heading",{name:"preflop · 150 chips in pot"})).toBeVisible();
- await expect(page.locator(".analyzer-table .acting")).toContainText("HJ");
+ await expect(page.locator(".analyzer-table .acting")).toContainText("HJ · Morgan");
  await page.getByRole("button",{name:"Previous decision"}).click();
  await expect(page.locator(".analyzer-table .acting")).toContainText("UTG");
  await expect(page.getByText("Solver strategy unavailable for this scenario")).toBeVisible();
@@ -56,5 +68,14 @@ test("review completed trainer hand opens the actual session history",async({pag
  await page.getByRole("link",{name:"Review This Hand"}).click();
  await expect(page.getByRole("heading",{name:"Hand review workspace"})).toBeVisible();
  await expect(page.getByRole("button",{name:"Next decision"})).toBeEnabled();
+ await expect(page.locator("details").filter({has:page.getByText("Enter or edit hand",{exact:true})})).not.toHaveAttribute("open","");
  await expect(page.locator(".analyzer-table").getByLabel("Hidden card")).toHaveCount(10);
+});
+
+
+test("Study rejects a mismatched analyzer transfer",async({page})=>{
+  await page.goto("/?source=river-550-btn-v1&scenario=incorrect");
+  await expect(page.getByRole("main").getByText("This decision has no exact published strategy.")).toBeVisible();
+  await expect(page.getByLabel("Supported exact scenario")).toHaveValue("");
+  await expect(page.getByRole("table",{name:"Selected hand action frequencies and EV"})).toHaveCount(0);
 });

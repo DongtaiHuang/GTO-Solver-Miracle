@@ -74,6 +74,7 @@ describe("editable opponent assumptions", () => {
   it("configures the selected trainer seat independently", async () => {
     const user = userEvent.setup(), changed = vi.fn();
     render(<OpponentSetup profiles={profileFixtures} configs={initialOpponents()} onChange={changed} disabled={false} />);
+    await user.click(screen.getByText("Opponent configuration",{exact:false,selector:"summary"}));
     await user.click(screen.getByRole("button", { name: /Seat 2/ }));
     await user.selectOptions(screen.getByLabelText("Seat 2 profile"), "tp");
     const configs = changed.mock.calls.at(-1)![0];

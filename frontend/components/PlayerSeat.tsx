@@ -1,8 +1,8 @@
 import type { Player } from "../lib/types";
 import { Card } from "./Card";
 export const chips = (amount: number) => amount.toLocaleString("en-US");
-export function PlayerSeat({ player, hero, button, winner }: {
-  player: Player; hero: boolean; button: boolean; winner: boolean;
+export function PlayerSeat({ player, hero, button, winner, profile }: {
+  player: Player; hero: boolean; button: boolean; winner: boolean; profile?: string;
 }) {
   return <section className={`seat seat-${player.seat} ${player.status === "acting" ? "seat-active" : ""}
     ${player.status === "folded" ? "seat-folded" : ""} ${hero ? "seat-hero" : ""} ${winner ? "seat-winner" : ""}`}
@@ -11,6 +11,7 @@ export function PlayerSeat({ player, hero, button, winner }: {
       <Card key={i} value={player.cards?.[i]} hidden={!player.cards} />)}</div>
     <div className="seat-info">
       <div className="seat-name"><span>{player.name}</span><span className="position">{player.position}</span></div>
+      {profile && <small className="seat-profile">{profile}</small>}
       <strong>{chips(player.stack)} <small>chips</small></strong>
       <div className="seat-status">{winner ? "Winner" : player.status}</div>
     </div>

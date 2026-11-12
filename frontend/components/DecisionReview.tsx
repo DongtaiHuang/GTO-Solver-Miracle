@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import {useState} from "react";
 import {requestJson} from "../lib/api";
 import type {Event,Hand,Snapshot} from "../lib/analyzer";
@@ -36,7 +37,7 @@ export function DecisionReview({hand,state,recorded}:{hand:Hand;state:Snapshot;r
  setStrategy(await requestJson<StrategyResult>("/api/strategy/query",{scenario:chosen.scenario}));
  });}}><option value="">Choose exact abstraction</option>{state.candidates.map(s=><option key={s}>{s}</option>)}</select></label>:
  <p>Solver strategy unavailable for this scenario</p>}
- {strategy&&<><p>{strategy.scenario.abstraction.assumptions.join(" ")}</p>
+ {strategy&&<>{strategy.status==="available"&&strategy.source&&<Link className="button-link" href={`/?source=${encodeURIComponent(strategy.source.solution_id)}&scenario=${strategy.scenario_id}`}>Inspect this decision in Study</Link>}<p>{strategy.scenario.abstraction.assumptions.join(" ")}</p>
  <p>{strategy.source?.validation_methodology}</p>{combo?<ul>{Object.entries(combo.frequencies).map(([a,f])=><li key={a}>{a}: {(100*f).toFixed(1)}% · EV {combo.action_ev?.[a]?.toFixed(2)??"unavailable"} chips</li>)}</ul>:
  <><p>Acting hand unknown or outside the represented range. Reach-weighted source range:</p>
  <ul>{Object.entries(strategy.frequencies??{}).map(([a,f])=><li key={a}>{a} {(100*f).toFixed(1)}% · EV {strategy.action_ev?.[a]?.toFixed(2)??"unavailable"} chips</li>)}</ul></>}
