@@ -344,13 +344,13 @@ def test_local_dataset_limits_and_loading(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setattr(catalog_module, "MAX_CATALOG_SOLUTIONS", 4)
     with pytest.raises(ValueError, match="124"):
         import_dataset(dataset(), tmp_path / "limit.db")
-    with pytest.raises(ValueError, match="137"):
+    with pytest.raises(ValueError, match="165"):
         SolutionCatalog(demo_catalog().entries * 2)
 
 
 def test_api_exact_lookup_source_metadata_and_no_public_import() -> None:
     client = TestClient(create_app())
-    assert len(client.get("/api/strategy/scenarios").json()["scenarios"]) == 9
+    assert len(client.get("/api/strategy/scenarios").json()["scenarios"]) == 37
     samples = client.get("/api/strategy/examples").json()["scenarios"]
     assert len(samples) == 4
     for record in samples:

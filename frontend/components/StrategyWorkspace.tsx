@@ -102,6 +102,7 @@ export function StrategyWorkspace({ profiles, opponent, onOpponentChange }: {
         <div title="Smaller remaining stack between these players"><small>Effective stack</small><b>{preview.effective_stack} chips</b></div>
         <div><small>Blinds / ante</small><b>{preview.small_blind}/{preview.big_blind} · {preview.ante}</b></div>
       </div>}
+      {preview?.abstraction.tree_id==="turn-river-halfpot-v1" && <p className="field-hint">Joint turn–river solve · Turn EV includes future betting on every legal river. Published river continuations: 9♦ and A♠.</p>}
       {visible && <div className={`strategy-status ${visible.status}`} role="status" aria-label="Strategy coverage status">
         <strong>{visible.status==="available"?"Exact solver match":visible.message}</strong><span>{visible.represented_combos} represented / {visible.unblocked_combos} unblocked combos</span>
 </div>}

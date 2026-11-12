@@ -5,6 +5,10 @@ The description above states the long-term project vision. The current implement
 
 ---
 
+## Task 009 — Turn-to-river strategy
+
+Study and Hand Analyzer support a joint turn-and-river CFR+ solve starting with BB on Kd 7h 2s Tc. Select ts-root-v1 to inspect turn EV across all legal river runouts. [Accuracy, coverage and reproduction](docs/TASK009.md).
+
 ## Task 008 — Expanded river strategies
 
 Study and Hand Analyzer include five additional solver decisions for weighted eight-combo ranges, two simultaneous bet sizes and a raise to 1,650 chips. [Solver accuracy, benchmarks and reproduction](docs/TASK008.md).
