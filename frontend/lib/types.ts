@@ -15,6 +15,7 @@ export interface HistoryEntry {
 }
 export interface Outcome { pot: number; winners: number[]; payouts: Record<string, number> }
 export interface GameState {
+  observation?: import("./observations").Entry | null;
   hand_id: string; hand_number: number; revision: number; street: Street;
   button: number; hero: number; actor: number | null; board: string[];
   pot: number; settled_pot: number; big_blind: number; effective_stack: number;

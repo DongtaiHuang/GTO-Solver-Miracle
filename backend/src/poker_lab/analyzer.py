@@ -28,6 +28,7 @@ class Seat(StrictModel):
 
 
 class Hand(StrictModel):
+    trainer_hand_id: Annotated[str, Field(min_length=1, max_length=80)] | None = None
     version: Literal["1.0"]
     seats: dict[Position, Seat]
     hero: Position
@@ -220,6 +221,7 @@ def from_trainer(view: GameView) -> Hand:
         {
             "version": "1.0",
             "hero": positions[view.hero],
+            "trainer_hand_id": view.hand_id,
             "small_blind": view.big_blind // 2,
             "big_blind": view.big_blind,
             "seats": {

@@ -4,7 +4,7 @@ from contextlib import contextmanager
 
 from fastapi import FastAPI, HTTPException, Request, Response
 
-from poker_lab import analyzer
+from poker_lab import analyzer, observations
 from poker_lab.equity_api import create_equity_router
 from poker_lab.profiles import OpponentProfile, default_profiles
 from poker_lab.schemas import GameView, HeroAction, NewHandRequest
@@ -56,7 +56,7 @@ def create_app(
     def health() -> dict[str, str]:
         return {"status": "ok"}
 
-    @app.post("/api/games", response_model=GameView)
+    @app.post("/api/games", response_model=observations.GameWithObservation)
     def create(body: NewHandRequest, request: Request, response: Response) -> GameView:
         with errors():
             token, state = sessions.create(request.cookies.get(COOKIE), body.opponents)
@@ -69,17 +69,17 @@ def create_app(
             secure=os.environ.get("COOKIE_SECURE", "false") == "true",
             max_age=int(sessions.ttl),
         )
-        return state
+        return observations.trainer_game(state)
 
-    @app.get("/api/game", response_model=GameView)
+    @app.get("/api/game", response_model=observations.GameWithObservation)
     def current(request: Request) -> GameView:
         with errors():
-            return sessions.get(request.cookies.get(COOKIE))
+            return observations.trainer_game(sessions.get(request.cookies.get(COOKIE)))
 
-    @app.post("/api/game/actions", response_model=GameView)
+    @app.post("/api/game/actions", response_model=observations.GameWithObservation)
     def action(body: HeroAction, request: Request) -> GameView:
         with errors():
-            return sessions.act(request.cookies.get(COOKIE), body)
+            return observations.trainer_game(sessions.act(request.cookies.get(COOKIE), body))
 
     @app.get("/api/profiles", response_model=list[OpponentProfile])
     def profiles() -> list[OpponentProfile]:
@@ -114,6 +114,17 @@ def create_app(
     def review_trainer(request: Request) -> analyzer.Hand:
         with errors():
             return analyzer.from_trainer(sessions.get(request.cookies.get(COOKIE)))
+
+    @app.post("/api/observations/report")
+    async def observation_report(
+        request: Request, body: observations.SummaryRequest
+    ) -> list[observations.PlayerReport]:
+        with errors():
+            raw = await request.body()
+            if len(raw) > 1024 * 1024:
+                raise HTTPException(413, "Observation archive exceeds 1 MiB")
+            strict_json(raw.decode("utf-8"))
+            return observations.report(body)
 
     return app
 

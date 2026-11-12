@@ -9,6 +9,7 @@ import { ProfileEditor } from "./ProfileEditor";
 import { RangeMatrix } from "./RangeMatrix";
 import { StrategyPanels } from "./StrategyPanels";
 import { EquityAnalysis } from "./EquityAnalysis";
+import {OpponentIntelligence} from "./OpponentIntelligence";
 import { StrategyWorkspace } from "./StrategyWorkspace";
 
 interface Form {
@@ -173,5 +174,6 @@ export function StudyDashboard() {
     }} />
     <StrategyPanels result={result} pending={loading} />
     </>}
+    <OpponentIntelligence/>
   </main>;
 }

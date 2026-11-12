@@ -1,5 +1,6 @@
 "use client";
 import {useEffect,useRef,useState} from "react";
+import {OpponentIntelligence} from "./OpponentIntelligence";
 import {QuickHandSetup} from "./QuickHandSetup";
 import {Card} from "./Card";
 import {DecisionReview} from "./DecisionReview";
@@ -14,6 +15,7 @@ export function HandAnalyzer(){
  const [hand,setHand]=useState<Hand>(emptyHand),[states,setStates]=useState<Snapshot[]>([]),[i,go]=useState(0);
  const [error,setError]=useState(""),[busy,setBusy]=useState(false),[size,setSize]=useState("200");
  const [saveName,setName]=useState("My hand"),[saves,setSaves]=useState<string[]>([]),[notice,setNotice]=useState("");
+ const [trainerSource,setTrainerSource]=useState(false);
  const entry=useRef<HTMLDetailsElement>(null);
  const [revision,setRevision]=useState(0);
  function install(h:Hand,s:Snapshot[],at:number){setHand(h);setStates(s);go(Math.min(at,s.length-1));setRevision(v=>v+1);}
@@ -23,7 +25,7 @@ export function HandAnalyzer(){
  useEffect(()=>{let active=true;setBusy(true);
  (async()=>{const from=new URLSearchParams(location.search).get("from")==="trainer";
  const h=from?await requestJson<Hand>("/api/analyzer/trainer"):emptyHand();
- const [validated,steps]=await readHistory(JSON.stringify(h));if(active){install(validated,steps,0);if(entry.current)entry.current.open=!from;
+ const [validated,steps]=await readHistory(JSON.stringify(h));if(active){setTrainerSource(from);install(validated,steps,0);if(entry.current)entry.current.open=!from;
  setSaves(Object.keys(sessionStorage).filter(k=>k.startsWith(storage)).map(k=>k.slice(storage.length)));}})()
  .catch(e=>{if(active)setError(String(e));}).finally(()=>{if(active)setBusy(false);});return()=>{active=false};},[]);
  const state=states[i],last=i===states.length-1,selected=hand.actions[i];
@@ -39,13 +41,13 @@ export function HandAnalyzer(){
  <button onClick={()=>void execute(()=>load(JSON.stringify({...hand,board:cards(hand.board.join(" ")),
  seats:Object.fromEntries(seats.map(p=>[p,{...hand.seats[p],cards:hand.seats[p].cards?cards(hand.seats[p].cards!.join(" ")):null}]))}),i))}>Validate hand</button>
  {hand.actions.length>0&&<button onClick={()=>void execute(()=>load(JSON.stringify({...hand,actions:hand.actions.slice(0,-1),payouts:null}),hand.actions.length-1))}>Undo last action</button>}
- <button onClick={()=>void execute(()=>load(JSON.stringify(emptyHand())))}>New history</button></details>
+ <button onClick={()=>void execute(()=>load(JSON.stringify(emptyHand())).then(()=>setTrainerSource(false)))}>New history</button></details>
  <details className="study-card"><summary>Save, reopen or transfer JSON</summary><label className="field">Saved hand name<input value={saveName} maxLength={80} onChange={e=>setName(e.target.value)}/></label>
  <button disabled={!states.length||!saveName.trim()} onClick={()=>void execute(async()=>{sessionStorage.setItem(storage+saveName,JSON.stringify(hand));setSaves(Array.from(new Set([...saves,saveName])));setNotice("Saved in this tab.");})}>Save in this tab</button>
- {saves.map(name=><button key={name} onClick={()=>void execute(()=>load(sessionStorage.getItem(storage+name)??""))}>Reopen {name}</button>)}
+ {saves.map(name=><button key={name} onClick={()=>void execute(()=>load(sessionStorage.getItem(storage+name)??"").then(()=>setTrainerSource(false)))}>Reopen {name}</button>)}
  <button disabled={!states.length} onClick={()=>{const url=URL.createObjectURL(new Blob([JSON.stringify(hand,null,2)],{type:"application/json"}));
  const a=document.createElement("a");a.href=url;a.download="poker-hand.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}}>Export JSON</button>
- <label className="field">Import hand JSON<input type="file" accept=".json" onChange={e=>{const file=e.target.files?.[0];e.target.value="";if(file)void execute(async()=>{if(file.size>1048576)throw Error("History exceeds 1 MiB");await load(await file.text());});}}/></label></details>
+ <label className="field">Import hand JSON<input type="file" accept=".json" onChange={e=>{const file=e.target.files?.[0];e.target.value="";if(file)void execute(async()=>{if(file.size>1048576)throw Error("History exceeds 1 MiB");await load(await file.text());setTrainerSource(false);});}}/></label></details>
  {busy&&<p role="status">Loading validated replay…</p>}{notice&&<p role="status">{notice}</p>}{error&&<p role="alert">{error}</p>}
  {state&&<div className="replay-workspace"><section className="study-card reconstructed-hand"><h2>{state.street} · {state.pot} chips in pot</h2>
  <div className="analyzer-table">{seats.map(p=><div key={p} className={state.actor===p?"acting":""}><b>{p}{state.players[p].name!==p && " · "+state.players[p].name}</b>
@@ -63,5 +65,5 @@ export function HandAnalyzer(){
  {last&&state.actor&&(state.board_complete?<><label className="field">Bet or raise to (chips)<input type="number" value={size} onChange={e=>setSize(e.target.value)}/></label>
  <p>Full raise bounds {state.legal.min_raise_to??"—"} to {state.legal.max_raise_to}</p>
  {state.legal.actions.map(a=><button key={a} onClick={()=>append(a)}>Record {a}</button>)}</>:<button onClick={()=>{if(entry.current){entry.current.open=true;entry.current.scrollIntoView();entry.current.querySelector<HTMLInputElement>('input[placeholder="Flop · turn · river"]')?.focus();}}}>Enter {state.street} board</button>)}</section>
- <DecisionReview key={revision+"-"+i} hand={hand} state={state} recorded={selected}/></div>}</fieldset></main>;
+ <DecisionReview key={revision+"-"+i} hand={hand} state={state} recorded={selected}/></div>}</fieldset><OpponentIntelligence hand={states.length&&!trainerSource&&!hand.trainer_hand_id?hand:undefined}/></main>;
 }

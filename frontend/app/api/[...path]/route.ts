@@ -3,7 +3,7 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
   const { path } = await context.params;
   const route = path.join("/");
   const permitted = (request.method === "GET" && ["analyzer/trainer","game", "profiles", "study/current", "strategy/scenarios", "strategy/examples"].includes(route)) ||
-    (request.method === "POST" && ["analyzer/replay","games", "game/actions", "study", "equity/hand-vs-hand", "equity/hand-vs-range",
+    (request.method === "POST" && ["observations/report","analyzer/replay","games", "game/actions", "study", "equity/hand-vs-hand", "equity/hand-vs-range",
       "equity/range-vs-range", "equity/multiway", "equity/pot-odds",
       "strategy/exploit", "strategy/query", "strategy/frequencies", "strategy/source"].includes(route));
   if (!permitted) return NextResponse.json({ detail: "Not found" }, { status: 404 });

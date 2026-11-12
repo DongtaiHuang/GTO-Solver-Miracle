@@ -5,6 +5,10 @@ The description above states the long-term project vision. The current implement
 
 ---
 
+## Task 010 — Adaptive opponent modeling
+
+Open **Opponent observations** in Trainer, Analyzer, or Study to inspect replay-derived opportunities, uncertainty, and provisional archetypes. [Definitions, identity mapping, and tab-local archive](docs/TASK010.md).
+
 ## Task 009 — Turn-to-river strategy
 
 Study and Hand Analyzer support a joint turn-and-river CFR+ solve starting with BB on Kd 7h 2s Tc. Select ts-root-v1 to inspect turn EV across all legal river runouts. [Accuracy, coverage and reproduction](docs/TASK009.md).
