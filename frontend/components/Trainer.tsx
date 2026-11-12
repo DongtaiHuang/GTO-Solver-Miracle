@@ -9,6 +9,7 @@ import { ApiError, requestGame } from "../lib/api";
 import type { Action, GameState } from "../lib/types";
 import { ActionControls } from "./ActionControls";
 import { HistoryPanel } from "./HistoryPanel";
+import {OpponentIntelligence} from "./OpponentIntelligence";
 import { TablePreview } from "./TablePreview";
 import { PokerTable } from "./PokerTable";
 import { ShowdownResult } from "./ShowdownResult";
@@ -81,6 +82,7 @@ export function Trainer() {
       <div className="trainer-study-link"><Link href="/?from=trainer">Open this hand in Study ↗</Link></div>
       {completed && <p className="session-note">Start a new hand to reset all stacks to 100 BB and rotate the button.</p>}
     </> : <TablePreview opponents={opponents}/>}
+    <OpponentIntelligence onAdopt={!busy&&(!game||completed)?(seat,id)=>setOpponents(current=>current.map((c,i)=>i===seat-1?{id}:c)):undefined}/>
     <footer>NLHE · Integer chips · Server-validated actions · Heuristic opponents</footer>
   </main>;
 }

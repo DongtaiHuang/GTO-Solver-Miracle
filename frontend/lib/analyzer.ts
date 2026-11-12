@@ -2,7 +2,7 @@ import type {Action,Street,LegalActions} from "./types";
 export const seats=["BTN","SB","BB","UTG","HJ","CO"] as const;
 export type Pos=typeof seats[number];
 export interface Event {position:Pos;street:Street;action:Action;amount:number|null}
-export interface Hand {version:"1.0";hero:Pos;small_blind:number;big_blind:number; initial_pot?:number|null;
+export interface Hand {trainer_hand_id?:string|null;version:"1.0";hero:Pos;small_blind:number;big_blind:number; initial_pot?:number|null;
  seats:Record<Pos,{name:string;stack:number;cards:string[]|null}>;board:string[];actions:Event[];payouts?:Partial<Record<Pos,number>>|null}
 export interface Snapshot {street:Street;actor:Pos|null;board:string[];board_complete:boolean;pot:number;
  players:Record<Pos,{name:string;stack:number;bet:number;contribution:number;cards:string[]|null;status:string}>;

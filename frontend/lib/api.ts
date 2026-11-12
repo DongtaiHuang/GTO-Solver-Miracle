@@ -1,3 +1,4 @@
+import {captureCompleted} from "./observations";
 import type { GameState } from "./types";
 export class ApiError extends Error {
   constructor(message: string, public status: number) { super(message); }
@@ -21,6 +22,8 @@ export async function requestJson<T>(path: string, body?: unknown, signal?: Abor
   return data as T;
 }
 
-export function requestGame(path: string, body?: unknown): Promise<GameState> {
-  return requestJson<GameState>(path, body);
+export async function requestGame(path: string, body?: unknown): Promise<GameState> {
+  const game=await requestJson<GameState>(path, body);
+  if(game.observation)captureCompleted(game.observation);
+  return game;
 }
