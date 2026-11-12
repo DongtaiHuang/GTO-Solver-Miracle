@@ -31,6 +31,7 @@ test("Study is the landing page with editable ranges and honest solver availabil
 test("configured trainer hands open in Study with only public game-state data", async ({ page }) => {
   await page.goto("/trainer");
   await expect(page.getByRole("button", { name: "New Hand" })).toBeEnabled();
+  await page.locator("summary").filter({hasText:"Opponent configuration"}).click();
   await page.getByRole("button", { name: /Seat 2/ }).click();
   await page.getByLabel("Seat 2 profile", { exact: true }).selectOption("lp");
   const responsePromise = page.waitForResponse(r => r.url().endsWith("/api/games") && r.request().method() === "POST");
@@ -38,6 +39,8 @@ test("configured trainer hands open in Study with only public game-state data", 
   const response = await responsePromise;
   expect(response.request().postDataJSON().opponents[1].id).toBe("lp");
   const game = await response.json();
+  await expect(page.locator(".opponent-setup")).not.toHaveAttribute("open","");
+  await expect(page.locator(".seat-2 .seat-profile")).toHaveText("LP");
   await expect(page.getByLabel("Hidden card")).toHaveCount(10);
   await page.getByRole("link", { name: /Open this hand in Study/ }).click();
   await expect(page.getByText("TRAINER SNAPSHOT", { exact: true })).toBeVisible();

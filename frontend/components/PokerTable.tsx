@@ -1,4 +1,5 @@
 import type { GameState } from "../lib/types";
+import { profileLabel } from "./TablePreview";
 import { Card } from "./Card";
 import { PlayerSeat, chips } from "./PlayerSeat";
 export function PokerTable({ game }: { game: GameState }) {
@@ -15,6 +16,7 @@ export function PokerTable({ game }: { game: GameState }) {
       <div className="street-label">{game.street === "complete" ? (game.showdown ? "Showdown" : "Hand complete") : game.street}</div>
     </div>
     {game.players.map(p => <PlayerSeat key={p.seat} player={p} hero={p.seat === game.hero}
+      profile={p.seat!==game.hero && game.opponents?.[p.seat-1] ? profileLabel(game.opponents[p.seat-1].id) : undefined}
       button={p.seat === game.button} winner={winners.has(p.seat)} />)}
   </div>;
 }

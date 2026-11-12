@@ -9,6 +9,7 @@ import { ApiError, requestGame } from "../lib/api";
 import type { Action, GameState } from "../lib/types";
 import { ActionControls } from "./ActionControls";
 import { HistoryPanel } from "./HistoryPanel";
+import { TablePreview } from "./TablePreview";
 import { PokerTable } from "./PokerTable";
 import { ShowdownResult } from "./ShowdownResult";
 import { chips } from "./PlayerSeat";
@@ -56,23 +57,20 @@ export function Trainer() {
     });
   }
   const completed = game?.street === "complete";
-  return <main className="trainer">
-    <header className="app-header"><div><p className="eyebrow">POKER STRATEGY LAB</p><h1>Play the hand.</h1></div>
-      <div className="header-actions"><span className="practice-badge">Practice / 6-max</span>
+  return <main className="trainer practice-room">
+    <header className="app-header"><div><p className="eyebrow">6-MAX CASH</p><h1>Trainer</h1></div>
+      <div className="header-actions"><span className="practice-badge">Heuristic opponents</span>
         <button className="primary" disabled={busy || needsSync || profiles.length !== 5 || (!!game && !completed)}
           onClick={() => void mutate("/api/games", { opponents })}>New Hand</button></div></header>
-    <p className="subtitle">Read the table. Make your decision. Five heuristic opponents — no GTO claims.</p>
     {profileError && <div className="error-banner" role="alert">{profileError}</div>}
     <OpponentSetup profiles={profiles} configs={opponents} onChange={setOpponents}
       disabled={busy || profiles.length !== 5 || (!!game && !completed)} />
-    {game && <div className="trainer-study-link"><Link href="/?from=trainer">Open this hand in Study ↗</Link>
-      <span>Visible cards, positions, pot, bets, and history only</span>{completed && <Link href="/analyzer?from=trainer">Review This Hand</Link>}</div>}
     {error && <div className="error-banner" role="alert">{error}
       <button disabled={busy} onClick={() => void refresh()}>Refresh table</button></div>}
     {game ? <>
-      <div className="game-metrics"><span>Hand <b>#{game.hand_number}</b></span><span>Blinds <b>50 / 100</b></span>
+      <div className="game-metrics"><span className="street-chip">{game.street}</span><span>Hand <b>#{game.hand_number}</b></span><span>Blinds <b>50 / 100</b></span>
         <span>Hero effective <b>{chips(game.effective_stack)} chips</b></span>
-        <span aria-live="polite">{busy ? "Processing…" : completed ? "Hand complete" : "Your turn"}</span></div>
+        <span aria-live="polite">{busy ? "Processing…" : completed ? "Hand complete" : "Acting: "+(game.players[game.actor??game.hero].name)}</span></div>
       <div className="workspace"><div className="play-area">
         <PokerTable game={game} />
         {completed ? <ShowdownResult game={game} /> :
@@ -80,10 +78,9 @@ export function Trainer() {
             disabled={busy || needsSync || game.actor !== game.hero} onAction={act} />}
       </div><HistoryPanel entries={game.history} /></div>
       {game.street==="river" && game.actor===game.hero && <TrainerRiverFeedback key={game.hand_id+game.revision} game={game}/>}
+      <div className="trainer-study-link"><Link href="/?from=trainer">Open this hand in Study ↗</Link></div>
       {completed && <p className="session-note">Start a new hand to reset all stacks to 100 BB and rotate the button.</p>}
-    </> : <section className="welcome"><div className="welcome-mark">♠</div><h2>{busy ? "Loading your table…" : "Your seat is ready."}</h2>
-      <p>Six seats. 100 big blinds. Every decision is yours.</p>
-      <p>Choose New Hand to begin. Cards and chip accounting stay on the server.</p></section>}
+    </> : <TablePreview opponents={opponents}/>}
     <footer>NLHE · Integer chips · Server-validated actions · Heuristic opponents</footer>
   </main>;
 }

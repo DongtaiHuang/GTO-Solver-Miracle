@@ -33,7 +33,14 @@ export function StrategyWorkspace({ profiles, opponent, onOpponentChange }: {
       requestJson<StrategyScenarioIndex>("/api/strategy/scenarios", undefined, controller.signal),
       requestJson<StrategyScenarioIndex>("/api/strategy/examples", undefined, controller.signal),
     ]).then(([real, fixtures]) => {
-      if (!controller.signal.aborted) { setRealIndex(real); setExamples(fixtures); }
+      if (controller.signal.aborted) return;
+      setRealIndex(real); setExamples(fixtures);
+      const params=new URLSearchParams(window.location.search);
+      if (params.has("source") || params.has("scenario")) {
+        const record=real.scenarios.find(s=>s.solution_id===params.get("source") && s.scenario_id===params.get("scenario"));
+        if(record){setSelectedScenario(record.solution_id);setScenarioText(JSON.stringify(record.scenario,null,2));}
+        else setCatalogError("This decision has no exact published strategy.");
+      }
     }).catch(err => { if (!controller.signal.aborted) setCatalogError(err instanceof Error ? err.message : "Strategy catalog unavailable."); });
     return () => { controller.abort(); requestRef.current?.abort(); };
   }, []);
