@@ -54,6 +54,10 @@ def keys() -> jwt.PyJWKClient:
 
 def claims(token: str, nonce: str) -> tuple[str, str, str | None]:
     try:
+        header = jwt.get_unverified_header(token)
+        kid = header.get("kid")
+        if header.get("alg") != "RS256" or not isinstance(kid, str) or not 1 <= len(kid) <= 128:
+            raise ValueError
         key = keys().get_signing_key_from_jwt(token).key
         c = jwt.decode(
             token,
@@ -70,7 +74,9 @@ def claims(token: str, nonce: str) -> tuple[str, str, str | None]:
             str(c.get("name") or "Player")[:120],
             (c.get("email") if c.get("email_verified") is True else None),
         )
-    except (jwt.PyJWTError, ValueError, TypeError):
+    except jwt.PyJWKClientConnectionError:
+        raise HTTPException(503, "Identity provider unavailable") from None
+    except (jwt.PyJWTError, ValueError, TypeError, OverflowError):
         raise HTTPException(401, "Identity could not be verified") from None
 
 
@@ -80,11 +86,26 @@ DB = Annotated[Connection, Depends(database, scope="function")]
 def owner(request: Request, db: DB) -> UUID:
     token = request.cookies.get(COOKIE)
     if token:
+        params = {"key": digest(token)}
+        # Match login's member-first lock order, including session revocation and
+        # account deletion. Recheck in a new READ COMMITTED statement after waiting.
         value = db.execute(
-            text("SELECT owner FROM logins WHERE digest=:key AND expires>now()"),
-            {"key": digest(token)},
+            text(
+                "SELECT m.id FROM members m JOIN logins l ON l.owner=m.id "
+                "WHERE l.digest=:key AND l.expires>clock_timestamp() FOR UPDATE OF m"
+            ),
+            params,
         ).scalar_one_or_none()
-        if isinstance(value, UUID):
+        if (
+            isinstance(value, UUID)
+            and db.execute(
+                text(
+                    "SELECT owner FROM logins WHERE digest=:key AND expires>clock_timestamp() FOR SHARE"
+                ),
+                params,
+            ).scalar_one_or_none()
+            == value
+        ):
             return value
     raise HTTPException(401, "Sign in required")
 
@@ -127,7 +148,7 @@ def login(body: Credential, request: Request, response: Response, db: DB) -> dic
     except HTTPException as exc:
         response.status_code = exc.status_code
         cookie(response, CHALLENGE, "", 0)
-        return {"detail": "Identity could not be verified"}
+        return {"detail": str(exc.detail)}
     user = db.execute(
         text("""INSERT INTO members(id,issuer,subject,display_name,verified_email)
         VALUES (:id,:issuer,:sub,:name,:email) ON CONFLICT(issuer,subject) DO UPDATE SET

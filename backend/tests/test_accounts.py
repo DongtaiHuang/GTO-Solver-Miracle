@@ -44,7 +44,9 @@ def signer(monkeypatch):
             "nonce": nonce,
             "name": "Player",
         }
-        return jwt.encode(claims | extra, key, algorithm="RS256")
+        return jwt.encode(
+            claims | extra, key, algorithm="RS256", headers={"kid": "test-signing-key"}
+        )
 
     return sign
 
@@ -219,6 +221,92 @@ def test_private_records_across_sessions(app, signer):
             {"key": auth.digest(b.cookies.get(auth.COOKIE))},
         )
     assert b.get(BASE + "me").status_code == 401
+
+
+def test_browser_bound_challenge_and_rotation(app, signer):
+    a = TestClient(app, headers=ORIGIN)
+    b = TestClient(app, headers=ORIGIN)
+    nonce = a.post(BASE + "challenge", json={}).json()["nonce"]
+    assert b.post(BASE + "login", json={"credential": signer(nonce)}).status_code == 401
+    with pool().begin() as db:
+        db.execute(
+            text("UPDATE challenges SET expires=now() WHERE digest=:digest"),
+            {"digest": auth.digest(a.cookies.get(auth.CHALLENGE))},
+        )
+    assert a.post(BASE + "login", json={"credential": signer(nonce)}).status_code == 401
+    for _ in range(2):
+        nonce = a.post(BASE + "challenge", json={}).json()["nonce"]
+        assert a.post(
+            BASE + "login", json={"credential": signer(nonce, sub="rotation-test")}
+        ).is_success
+        current = a.cookies.get(auth.COOKIE)
+        if _ == 0:
+            b.cookies.set(auth.COOKIE, current)
+    assert current != b.cookies.get(auth.COOKIE)
+    assert b.get(BASE + "me").status_code == 401
+    assert a.post(BASE + "delete", json={"confirm": True}).is_success
+    assert a.get(BASE + "me").status_code == 401
+
+
+def test_private_validation_and_wrong_signature(app, signer, monkeypatch):
+    a = TestClient(app, headers=ORIGIN)
+    marker = "fixture-private-value"
+    res = a.post(BASE + "login", json={"credential": [marker]})
+    assert res.status_code == 422 and marker not in res.text
+    assert "no-store" in res.headers["cache-control"]
+    nonce = a.post(BASE + "challenge", json={}).json()["nonce"]
+    token = signer(nonce)
+    other = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    monkeypatch.setattr(
+        auth,
+        "keys",
+        lambda: SimpleNamespace(
+            get_signing_key_from_jwt=lambda _: SimpleNamespace(key=other.public_key())
+        ),
+    )
+    assert a.post(BASE + "login", json={"credential": token}).status_code == 401
+    assert a.post(BASE + "login", json={"credential": token}).json()["detail"] == "Sign-in expired"
+
+
+def test_header_and_provider_failure(signer, monkeypatch):
+    from fastapi import HTTPException
+
+    token = signer("nonce")
+    with pytest.raises(HTTPException) as failure:
+        auth.claims(jwt.encode({"sub": "fixture"}, "a" * 32, algorithm="HS256"), "nonce")
+    assert failure.value.status_code == 401
+
+    def offline():
+        raise jwt.PyJWKClientConnectionError("fixture outage")
+
+    monkeypatch.setattr(auth, "keys", offline)
+    with pytest.raises(HTTPException) as failure:
+        auth.claims(token, "nonce")
+    assert failure.value.status_code == 503
+
+
+def test_public_body_limit_and_host_policy(monkeypatch):
+    monkeypatch.setenv("ALLOWED_HOSTS", "testserver")
+    c = TestClient(create_app())
+    assert (
+        c.get(
+            "/health", headers={"host": "other.invalid", "x-forwarded-host": "testserver"}
+        ).status_code
+        == 400
+    )
+    assert (
+        c.post(
+            "/api/analyzer/replay",
+            content=b" " * 1048577,
+            headers={"content-type": "application/json"},
+        ).status_code
+        == 413
+    )
+    assert (
+        c.post(BASE + "challenge", json={}, headers={"x-forwarded-host": "localhost"}).status_code
+        == 403
+    )
+    assert c.post(BASE + "challenge", content="{}", headers=ORIGIN).status_code == 415
 
 
 def test_unconfigured_database(monkeypatch):
