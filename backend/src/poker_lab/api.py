@@ -37,6 +37,9 @@ def errors() -> Iterator[None]:
 def create_app(
     store: SessionStore | None = None, *, strategy_catalog: SolutionCatalog | None = None
 ) -> FastAPI:
+    from poker_lab.infrastructure import validate_environment
+
+    validate_environment()
     sessions = store if store is not None else SessionStore()
 
     @asynccontextmanager

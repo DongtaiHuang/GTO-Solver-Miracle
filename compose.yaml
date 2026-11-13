@@ -1,8 +1,9 @@
 services:
   backend:
     build: ./backend
-    ports: ["8000:8000"]
+    ports: ["127.0.0.1:8000:8000"]
     environment:
+      MIRACLE_ENV: ${MIRACLE_ENV:-development}
       TRAINER_ORIGIN: ${TRAINER_ORIGIN:-http://localhost:3000}
       COOKIE_SECURE: ${COOKIE_SECURE:-false}
     healthcheck:
@@ -14,6 +15,6 @@ services:
     build:
       context: .
       dockerfile: frontend/Dockerfile
-    ports: ["3000:3000"]
+    ports: ["127.0.0.1:3000:3000"]
     environment:
       BACKEND_URL: http://backend:8000
