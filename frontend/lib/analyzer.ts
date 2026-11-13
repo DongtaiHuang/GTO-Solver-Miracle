@@ -17,6 +17,12 @@ export async function readHistory(raw:string):Promise<[Hand,Snapshot[]]> {
  if(raw.length>1024*1024)throw new Error("History exceeds 1 MiB");
  const res=await fetch("/api/analyzer/replay",{method:"POST",headers:{"Content-Type":"application/json"},body:raw,cache:"no-store"});
  const data=await res.json();
- if(!res.ok)throw new Error(typeof data.detail==="string"?data.detail:JSON.stringify(data.detail));
+ if(!res.ok){
+    if(Array.isArray(data.detail)){
+      const field=data.detail[0]?.loc?.filter((part:unknown)=>typeof part==="string"&&part!=="body"&&["version","hero","seats","actions","board","payouts","amount","cards","position","street","stack","big_blind","small_blind"].includes(part)).join(".");
+      throw new Error("Invalid hand history"+(field?" ("+field+")":"")+". Check the hand format and recorded actions.");
+    }
+    throw new Error(typeof data.detail==="string"?data.detail:"Hand history could not be validated.");
+  }
  return [JSON.parse(raw),data];
 }

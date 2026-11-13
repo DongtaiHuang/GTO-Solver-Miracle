@@ -20,9 +20,9 @@ export function ActionControls({ legal, disabled, onAction }: {
       <label className="size-input">Total street bet (chips)
         <input aria-label="Total street bet (chips)" type="number" step="1"
           min={legal.min_raise_to ?? 0} max={legal.max_raise_to} value={amount}
-          disabled={disabled} onChange={e => setAmount(e.target.value)} />
+          aria-describedby="sizing-guide" aria-invalid={!valid} disabled={disabled} onChange={e => setAmount(e.target.value)} />
       </label>
-      <p className="size-hint">Raise-to sizing · minimum {chips(legal.min_raise_to ?? 0)} · maximum {chips(legal.max_raise_to)}</p>
+      <p id="sizing-guide" className="size-hint">{valid ? "Total commitment this street" : "Enter a whole-chip total within the legal range"} · minimum {chips(legal.min_raise_to ?? 0)} · maximum {chips(legal.max_raise_to)}</p>
     </div>}
     <div className="action-buttons">
       <button className="fold" disabled={disabled || !legal.actions.includes("fold")} onClick={() => onAction("fold")}>Fold</button>

@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import {emptyHand} from "../lib/analyzer";
 test("guest account offers explicit sign-in and retains tab data on service failure", async ({
   page,
 }) => {
@@ -59,6 +60,9 @@ test("signed-in archive replacement reports a stale revision without clearing ev
 
 test("test provider callback opens a private account, imports practice, exports evidence and signs out", async ({page})=>{
   let signed=false, merged=false;
+  const hand=emptyHand();hand.seats.BTN.name="QA reviewer";
+  let stored:unknown;
+  await page.addInitScript(h=>sessionStorage.setItem("miracle.analyzer.v1.Reviewed hand",JSON.stringify(h)),hand);
   await page.setViewportSize({width:390,height:844});
   await page.addInitScript(()=>sessionStorage.setItem("miracle.training.v1",JSON.stringify({version:"1",attempts:[]})));
   await page.route("https://accounts.google.com/gsi/client",r=>r.fulfill({contentType:"text/javascript",body:
@@ -70,12 +74,22 @@ test("test provider callback opens a private account, imports practice, exports 
     if(!signed)return r.fulfill({status:401,json:{detail:"Sign in required"}});
     if(route==="logout")signed=false;
     if(route==="training")merged=true;
-    return r.fulfill({json:route==="me"?{name:"Test player"}:route==="observations"?{revision:0,archive:{entries:[],overrides:{},version:"1.0"}}:route==="hands"?[{id:"123",title:"Reviewed hand"}]:route==="training"?{added:0,duplicates:0}:[]});
+    if(route==="hands" && r.request().method()==="POST"){
+      stored=r.request().postDataJSON().hand;
+      return r.fulfill({json:{id:"123"}});
+    }
+    if(route==="123")return r.fulfill({json:{id:"123",title:"Reviewed hand",hand:stored}});
+    return r.fulfill({json:route==="me"?{name:"Test player"}:route==="observations"?{revision:0,archive:{entries:[],overrides:{},version:"1.0"}}:route==="hands"&&stored?[{id:"123",title:"Reviewed hand"}]:route==="training"?{added:0,duplicates:0}:[]});
   });
   await page.goto("/account");
   await page.getByRole("button",{name:"Sign in with Google"}).click();
   await page.getByRole("button",{name:"Test identity"}).click();
+  await page.getByRole("button",{name:"Import Reviewed hand"}).click();
+  expect(stored).toEqual(hand);
   await expect(page.getByRole("link",{name:"Open in Analyzer"})).toHaveAttribute("href","/analyzer?saved=123");
+  await page.getByRole("link",{name:"Open in Analyzer"}).click();
+  await expect(page.locator(".analyzer-table")).toContainText("BTN · QA reviewer");
+  await page.goBack();
   await page.getByRole("button",{name:"Merge tab attempts"}).click();
   await expect(page.locator("main [role=status]")).toContainText("0 attempts saved");
   expect(merged).toBe(true);

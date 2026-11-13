@@ -397,7 +397,7 @@ export function TrainingCenter() {
                 <button onClick={() => pick(selected)}>Retry exercise</button>{" "}
                 <Link
                   href={
-                    "/?source=" + p.solution_id + "&scenario=" + p.scenario_id
+                    "/?" + new URLSearchParams({source:p.solution_id, scenario:p.scenario_id, combo:p.combo})
                   }
                 >
                   Inspect in Study
