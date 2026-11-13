@@ -50,6 +50,39 @@ jobs:
       - if: always()
         run: docker compose down
 
+  account-infrastructure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      COMPOSE_FILE: compose.yaml:compose.accounts.yaml
+      COMPOSE_PROJECT_NAME: miracle-account-smoke
+      COMPOSE_PARALLEL_LIMIT: "1"
+      ALLOWED_HOSTS: backend,localhost,127.0.0.1
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure disposable database
+        run: |
+          password=$(openssl rand -hex 24)
+          echo "::add-mask::$password"
+          echo "POSTGRES_PASSWORD=$password" >> "$GITHUB_ENV"
+          echo "DATABASE_URL=postgresql+psycopg://miracle:$password@db:5432/miracle" >> "$GITHUB_ENV"
+      - run: docker compose config --quiet && docker compose build && docker compose up -d --wait --wait-timeout 180
+      - name: Verify migration, account connectivity and restart persistence
+        run: |
+          set -euo pipefail
+          sql() { docker compose exec -T db psql -XAt -v ON_ERROR_STOP=1 -U miracle -d miracle -c "$1"; }
+          test "$(sql 'SELECT version_num FROM alembic_version')" = 001_accounts
+          curl -fsS http://localhost:8000/ready
+          curl --retry 15 --retry-connrefused --retry-delay 1 -fsS http://localhost:3000/account >/dev/null
+          curl -fsS http://localhost:3000/api/profiles >/dev/null
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/api/account/me)" = 401
+          sql "INSERT INTO members(id,issuer,subject,display_name) VALUES(gen_random_uuid(),'ci','restart','CI')"
+          docker compose stop backend db
+          docker compose up -d --wait --wait-timeout 180
+          test "$(sql "SELECT count(*) FROM members WHERE issuer='ci' AND subject='restart'")" = 1
+          curl -fsS http://localhost:8000/ready
+      - if: always()
+        run: docker compose down --volumes --remove-orphans
   browser:
     runs-on: ubuntu-latest
     steps:
