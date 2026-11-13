@@ -1,4 +1,7 @@
 # GTO-Solver-Miracle
+
+![GTO-Solver-Miracle](frontend/public/brand/gto_solver_miracle_orange_spade_logo.png)
+
 A full-stack Texas Hold'em GTO trainer and hand history analyzer featuring opponent modeling, exploitative strategy adjustments, and poker solver algorithms.
 
 The description above states the long-term project vision. The current implementation includes the Task 001 engine, Task 002 interactive trainer, Task 003 strategy dashboard, Task 004 equity engine, and Task 005 exact strategy integration.

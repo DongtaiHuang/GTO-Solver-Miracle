@@ -56,6 +56,7 @@ export default function Account() {
     [hasTraining, foundTraining] = useState(false);
   const [active, open] = useState<Training | null>(null),
     [page, setPage] = useState(0);
+  const [checkingIdentity, setCheckingIdentity] = useState(true);
   const sign = useRef<HTMLDivElement>(null);
   async function run(fn: () => Promise<void>) {
     wait(true);
@@ -98,6 +99,8 @@ export default function Account() {
         await refresh(0);
       } catch (e) {
         if (!(e instanceof ApiError) || e.status !== 401) throw e;
+      } finally {
+        setCheckingIdentity(false);
       }
     });
   }, []);
@@ -188,7 +191,7 @@ export default function Account() {
       <section className="study-card" aria-busy={busy}>
         {error && <p role="alert">{error}</p>}
         {message && <p role="status">{message}</p>}
-        {!name ? (
+        {checkingIdentity ? <p role="status">Checking account status…</p> : !name ? (
           <>
             <h2>Guest workspace</h2>
             <p>

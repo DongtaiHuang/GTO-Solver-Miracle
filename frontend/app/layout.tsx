@@ -3,7 +3,8 @@ import "./globals.css";
 import { AppShell } from "../components/AppShell";
 
 export const metadata: Metadata = {
-  title: "Poker Strategy Lab",
+  title: "MIRACLE · Poker Strategy Lab",
+  icons: { icon: "/brand/orange-spade.png" },
   description: "Study poker ranges and opponent models with transparent strategy sources",
 };
 

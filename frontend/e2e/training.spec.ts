@@ -15,6 +15,12 @@ test("mobile practice records and reopens verified attempts", async ({
   await expect(
     page.getByRole("link", { name: "Inspect in Study" }),
   ).toBeVisible();
+  const study=await page.context().newPage();
+  await study.goto((await page.getByRole("link",{name:"Inspect in Study"}).getAttribute("href"))!);
+  await expect(study.getByLabel("Supported exact scenario")).toHaveValue("ts-root-v1");
+  await study.getByRole("button",{name:"Query exact strategy"}).click();
+  await expect(study.getByLabel("Inspect combination")).toHaveValue("KhQh");
+  await study.close();
   await page.getByRole("button", { name: "Retry exercise" }).click();
   await page.getByRole("button", { name: "check", exact: true }).click();
   await expect(

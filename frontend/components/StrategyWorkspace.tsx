@@ -69,7 +69,11 @@ export function StrategyWorkspace({ profiles, opponent, onOpponentChange }: {
         { scenario, mode: demo ? "synthetic_demo" : "validated_gto" }, controller.signal);
       if (!controller.signal.aborted && currentKey.current === queryKey) {
         resultKey.current = queryKey; setResult(data);
-        setSelectedHand(hand => data.classes.some(c=>c.hand_class===hand) ? hand : data.classes[0]?.hand_class ?? hand);
+        const params=new URLSearchParams(window.location.search);
+        const linked=data.status==="available" && params.get("source")===data.source?.solution_id && params.get("scenario")===data.scenario_id
+          ? data.combinations.find(c=>c.cards.join("")===params.get("combo")) : undefined;
+        if(linked){setSelectedHand(linked.hand_class);setSelectedCombo(linked.cards.join(""));}
+        else setSelectedHand(hand => data.classes.some(c=>c.hand_class===hand) ? hand : data.classes[0]?.hand_class ?? hand);
       }
     } catch (err) {
       if (!controller.signal.aborted && currentKey.current === queryKey)
