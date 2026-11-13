@@ -1,10 +1,13 @@
 import os
-from collections.abc import Awaitable, Callable, Iterator
-from contextlib import contextmanager
+from collections.abc import AsyncIterator, Awaitable, Callable, Iterator
+from contextlib import asynccontextmanager, contextmanager
 
 from fastapi import FastAPI, HTTPException, Request, Response
+from sqlalchemy import text
 
-from poker_lab import analyzer, observations
+from poker_lab import account_auth, analyzer, observations
+from poker_lab.account_auth import DB
+from poker_lab.account_data import data_router
 from poker_lab.equity_api import create_equity_router
 from poker_lab.profiles import OpponentProfile, default_profiles
 from poker_lab.schemas import GameView, HeroAction, NewHandRequest
@@ -35,7 +38,17 @@ def create_app(
     store: SessionStore | None = None, *, strategy_catalog: SolutionCatalog | None = None
 ) -> FastAPI:
     sessions = store if store is not None else SessionStore()
-    app = FastAPI(title="Poker Strategy Lab", version="0.5.0")
+
+    @asynccontextmanager
+    async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+        yield
+        from poker_lab.account_db import pool
+
+        if pool.cache_info().currsize:
+            pool().dispose()
+            pool.cache_clear()
+
+    app = FastAPI(title="Poker Strategy Lab", version="0.5.0", lifespan=lifespan)
 
     @app.middleware("http")
     async def protect(
@@ -44,6 +57,8 @@ def create_app(
         if request.url.path.startswith("/api/") and request.method == "POST":
             origin = request.headers.get("origin")
             allowed = os.environ.get("TRAINER_ORIGIN", "http://localhost:3000")
+            if request.url.path.startswith("/api/account/") and origin != allowed:
+                return Response(status_code=403)
             if origin is not None and origin != allowed:
                 return Response(status_code=403)
             if request.headers.get("content-type", "").split(";")[0] != "application/json":
@@ -95,9 +110,21 @@ def create_app(
         with errors():
             return study_current(sessions.get(request.cookies.get(COOKIE)))
 
+    app.include_router(account_auth.router)
+
+    @app.get("/ready")
+    def ready(db: DB) -> dict[str, str]:
+        if (
+            db.execute(text("SELECT version_num FROM alembic_version")).scalar_one_or_none()
+            != "001_accounts"
+        ):
+            raise HTTPException(503, "Database migration required")
+        return {"status": "ready"}
+
     app.include_router(create_equity_router())
     registry = strategy_catalog or configured_catalog(os.environ.get("STRATEGY_CATALOG"))
     app.include_router(create_strategy_router(registry))
+    app.include_router(data_router(registry))
 
     @app.post("/api/analyzer/replay")
     async def replay_hand(request: Request, body: analyzer.Hand) -> list[analyzer.Snapshot]:
@@ -127,6 +154,13 @@ def create_app(
             strict_json(raw.decode("utf-8"))
             return observations.report(body)
 
+    from starlette.middleware.trustedhost import TrustedHostMiddleware
+
+    hosts = os.environ.get("ALLOWED_HOSTS")
+    if hosts:
+        app.add_middleware(
+            TrustedHostMiddleware, allowed_hosts=[h.strip() for h in hosts.split(",")]
+        )
     app.add_middleware(PolicyBodyLimit)
     return app
 

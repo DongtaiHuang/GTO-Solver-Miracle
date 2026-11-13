@@ -165,6 +165,20 @@ class Attempt(StrictModel):
     position: str = Field(max_length=4)
 
 
+def verify_attempt(registry: SolutionCatalog, attempt: Attempt) -> None:
+    req = attempt.submission
+    entry = registry.source(req.solution_id, "validated_gto")
+    if (
+        not entry
+        or entry.document.content_hash != req.version
+        or entry.document.scenario.scenario_id != req.scenario_id
+        or entry.document.scenario.street != attempt.street
+        or entry.document.scenario.hero_position != attempt.position
+        or grade(registry, req) != attempt.feedback
+    ):
+        raise ValueError("Attempt cannot be verified against its original source")
+
+
 class Archive(StrictModel):
     version: Literal["1"]
     attempts: list[Attempt] = Field(max_length=64)

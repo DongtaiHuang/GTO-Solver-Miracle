@@ -9,28 +9,49 @@ class PolicyBodyLimit:
         self.app = app
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        if scope["type"] != "http" or scope["path"] not in (
-            "/api/strategy/training/grade",
-            "/api/strategy/training/report",
-            "/api/strategy/multistreet",
-            "/api/strategy/multistreet-policy",
+        account = (
+            scope["type"] == "http"
+            and scope["path"].startswith("/api/account/")
+            and scope["method"] == "POST"
+        )
+        if (
+            scope["type"] != "http"
+            or not account
+            and scope["path"]
+            not in (
+                "/api/strategy/training/grade",
+                "/api/strategy/training/report",
+                "/api/strategy/multistreet",
+                "/api/strategy/multistreet-policy",
+            )
         ):
             await self.app(scope, receive, send)
             return
+        limit = 1048576 if account and scope["path"] != "/api/account/training" else 65536
         buffer = bytearray()
         while True:
             message = await receive()
             if message["type"] == "http.disconnect":
                 return
             part = message.get("body", b"")
-            if len(part) + len(buffer) > 65536:
-                await JSONResponse(
-                    {"detail": "Multistreet requests are limited to 64 KiB"}, status_code=413
-                )(scope, receive, send)
+            if len(part) + len(buffer) > limit:
+                await JSONResponse({"detail": "Request exceeds size limit"}, status_code=413)(
+                    scope, receive, send
+                )
                 return
             buffer.extend(part)
             if not message.get("more_body", False):
                 break
+        if account:
+            from poker_lab.strategy_catalog import strict_json
+
+            try:
+                strict_json(buffer.decode("utf-8"))
+            except (ValueError, RecursionError):
+                await JSONResponse({"detail": "Invalid account JSON"}, status_code=422)(
+                    scope, receive, send
+                )
+                return
         pending = True
 
         async def bounded_receive() -> Message:
