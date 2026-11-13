@@ -246,5 +246,9 @@ coverage/
 !/frontend/lib/
 !/frontend/lib/*.ts
 
+*.dump
+*.pgbackup
+pgdata/
+
 # Private or licensed strategy imports and local approval records
 .strategy-data/

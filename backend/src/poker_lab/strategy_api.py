@@ -60,17 +60,7 @@ def create_strategy_router(catalog: SolutionCatalog | None = None) -> APIRouter:
         try:
             metrics = training.summarize(body)
             for attempt in body.attempts:
-                req = attempt.submission
-                entry = registry.source(req.solution_id, "validated_gto")
-                if (
-                    not entry
-                    or entry.document.content_hash != req.version
-                    or entry.document.scenario.scenario_id != req.scenario_id
-                    or entry.document.scenario.street != attempt.street
-                    or entry.document.scenario.hero_position != attempt.position
-                    or training.grade(registry, req) != attempt.feedback
-                ):
-                    raise ValueError("Attempt cannot be verified against its original source")
+                training.verify_attempt(registry, attempt)
             return training.VerifiedArchive(archive=body, report=metrics)
         except ValueError as exc:
             raise HTTPException(422, str(exc)) from None

@@ -24,7 +24,8 @@ export function HandAnalyzer(){
  async function load(raw:string,at=0){const [h,s]=await readHistory(raw);install(h,s,at);if(entry.current)entry.current.open=false;}
  useEffect(()=>{let active=true;setBusy(true);
  (async()=>{const from=new URLSearchParams(location.search).get("from")==="trainer";
- const h=from?await requestJson<Hand>("/api/analyzer/trainer"):emptyHand();
+ const saved=new URLSearchParams(location.search).get("saved");
+ const h=from?await requestJson<Hand>("/api/analyzer/trainer"):saved?(await requestJson<{hand:Hand}>("/api/account/hands/"+encodeURIComponent(saved))).hand:emptyHand();
  const [validated,steps]=await readHistory(JSON.stringify(h));if(active){setTrainerSource(from);install(validated,steps,0);if(entry.current)entry.current.open=!from;
  setSaves(Object.keys(sessionStorage).filter(k=>k.startsWith(storage)).map(k=>k.slice(storage.length)));}})()
  .catch(e=>{if(active)setError(String(e));}).finally(()=>{if(active)setBusy(false);});return()=>{active=false};},[]);

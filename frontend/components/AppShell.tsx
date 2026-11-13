@@ -10,7 +10,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return <div className="app-shell"><aside className="app-sidebar">
     <Link href="/" className="brand-lockup"><span className="brand-mark">M</span>
       <span>MIRACLE<small>POKER STRATEGY LAB</small></span></Link>
-    <p className="nav-caption">WORKSPACE</p>
+    <Link href="/account" className="button-link">Player account</Link><p className="nav-caption">WORKSPACE</p>
     <nav aria-label="Main navigation">{links.map(link => <Link key={link.href} href={link.href}
       aria-current={path === link.href ? "page" : undefined}>
       <span className="nav-icon">{link.icon}</span><span>{link.title}<small>{link.note}</small></span>

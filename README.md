@@ -250,3 +250,7 @@ docker compose down
 Both application containers run as non-root users. GitHub Actions runs Python lint/type/test checks, a TypeScript check and production frontend build, then builds and smoke-tests both containers. The npm lockfile pins the frontend installation. Python dependency ranges and optional development tooling are declared in `backend/pyproject.toml`.
 
 Framework setup reference: [Next.js installation documentation](https://nextjs.org/docs/app/getting-started/installation).
+
+## Private accounts and database deployment
+
+Open **Player account** to sign in, import tab-local saves and access private training records, observations and Analyzer hands. Guest mode runs without PostgreSQL. For account mode, configure a Google web client, copy .env.example to .env, provide PostgreSQL settings and run the account Compose overlay. See [Task 013 setup, migration and recovery instructions](docs/TASK013.md).
