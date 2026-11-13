@@ -3,6 +3,9 @@ from collections.abc import AsyncIterator, Awaitable, Callable, Iterator
 from contextlib import asynccontextmanager, contextmanager
 
 from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi.exception_handlers import request_validation_exception_handler
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from sqlalchemy import text
 
 from poker_lab import account_auth, analyzer, observations
@@ -52,6 +55,12 @@ def create_app(
             pool.cache_clear()
 
     app = FastAPI(title="Poker Strategy Lab", version="0.5.0", lifespan=lifespan)
+
+    @app.exception_handler(RequestValidationError)
+    async def validation_error(request: Request, exc: RequestValidationError) -> Response:
+        if request.url.path.startswith("/api/account/"):
+            return JSONResponse({"detail": "Invalid account request"}, status_code=422)
+        return await request_validation_exception_handler(request, exc)
 
     @app.middleware("http")
     async def protect(
@@ -160,11 +169,11 @@ def create_app(
     from starlette.middleware.trustedhost import TrustedHostMiddleware
 
     hosts = os.environ.get("ALLOWED_HOSTS")
+    app.add_middleware(PolicyBodyLimit)
     if hosts:
         app.add_middleware(
             TrustedHostMiddleware, allowed_hosts=[h.strip() for h in hosts.split(",")]
         )
-    app.add_middleware(PolicyBodyLimit)
     return app
 
 

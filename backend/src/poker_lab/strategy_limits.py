@@ -9,25 +9,27 @@ class PolicyBodyLimit:
         self.app = app
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        account = (
-            scope["type"] == "http"
-            and scope["path"].startswith("/api/account/")
-            and scope["method"] == "POST"
-        )
         if (
             scope["type"] != "http"
-            or not account
-            and scope["path"]
-            not in (
-                "/api/strategy/training/grade",
-                "/api/strategy/training/report",
-                "/api/strategy/multistreet",
-                "/api/strategy/multistreet-policy",
-            )
+            or scope["method"] != "POST"
+            or not scope["path"].startswith("/api/")
         ):
             await self.app(scope, receive, send)
             return
-        limit = 1048576 if account and scope["path"] != "/api/account/training" else 65536
+        path = scope["path"]
+        account = path.startswith("/api/account/")
+        if path in {
+            "/api/account/training",
+            "/api/strategy/training/grade",
+            "/api/strategy/training/report",
+            "/api/strategy/multistreet",
+            "/api/strategy/multistreet-policy",
+        }:
+            limit = 65536
+        elif path.startswith("/api/strategy/"):
+            limit = 2 * 1024 * 1024
+        else:
+            limit = 1024 * 1024
         buffer = bytearray()
         while True:
             message = await receive()

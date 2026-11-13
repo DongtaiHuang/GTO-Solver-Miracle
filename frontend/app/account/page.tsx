@@ -64,6 +64,9 @@ export default function Account() {
     try {
       await fn();
     } catch (e) {
+      if(e instanceof ApiError && e.status===401){
+        who(""); setHands([]); setSessions([]); open(null); setRevision(0); setPage(0);
+      }
       fail(String(e));
     } finally {
       wait(false);
@@ -98,6 +101,17 @@ export default function Account() {
       }
     });
   }, []);
+  useEffect(()=>{
+    const changed=()=>location.reload();
+    const restore=(event:PageTransitionEvent)=>{if(event.persisted)changed();};
+    const onStorage=(event:StorageEvent)=>{if(event.key==="miracle.account.changed")changed();};
+    window.addEventListener("storage",onStorage);
+    window.addEventListener("pageshow",restore);
+    return ()=>{window.removeEventListener("storage",onStorage);window.removeEventListener("pageshow",restore);};
+  },[]);
+  function identityChanged(){
+    try {localStorage.setItem("miracle.account.changed",crypto.randomUUID());}finally{location.reload();}
+  }
   async function signin() {
     const c = await requestJson<{ client_id: string; nonce: string }>(
       api + "challenge",
@@ -120,7 +134,7 @@ export default function Account() {
             api + "login",
             r.credential ? { credential: r.credential } : {},
           );
-          location.reload();
+          identityChanged();
         }),
     });
     if (sign.current) {
@@ -193,7 +207,7 @@ export default function Account() {
               onClick={() =>
                 void run(async () => {
                   await requestJson(api + "logout", {});
-                  location.reload();
+                  identityChanged();
                 })
               }
             >
@@ -433,7 +447,7 @@ export default function Account() {
                       )
                     ) {
                       await requestJson(api + "delete", { confirm: true });
-                      location.reload();
+                      identityChanged();
                     }
                   })
                 }

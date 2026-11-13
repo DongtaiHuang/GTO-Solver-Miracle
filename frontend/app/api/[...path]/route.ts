@@ -18,14 +18,15 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
       if (value) headers.set(name, value);
     }
     let body: string | undefined;
-    if(request.method==="POST" && account){
+    if(request.method==="POST"){
+      const limit = route.startsWith("strategy/") ? 2*1024*1024 : 1024*1024;
       const reader=request.body?.getReader();
       const chunks:Uint8Array<ArrayBufferLike>[]=[];let size=0;
       if(reader){while(true){const chunk=await reader.read();if(chunk.done)break;
-        size+=chunk.value.byteLength;if(size>1048576){await reader.cancel();return NextResponse.json({detail:"Archive too large"},{status:413});}chunks.push(chunk.value);}}
+        size+=chunk.value.byteLength;if(size>limit){await reader.cancel();return NextResponse.json({detail:"Archive too large"},{status:413});}chunks.push(chunk.value);}}
       const bytes=new Uint8Array(size);let offset=0;for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.length;}
       body=new TextDecoder("utf-8",{fatal:true}).decode(bytes);
-    }else if(request.method==="POST")body=await request.text();
+    }
     const response = await fetch(`${process.env.BACKEND_URL ?? "http://127.0.0.1:8000"}/api/${route}${account?request.nextUrl.search:""}`, {
       method: request.method, headers, body, cache: "no-store", redirect: "error",
       signal: AbortSignal.timeout(route.startsWith("equity/") ? 30000 : 15000),
