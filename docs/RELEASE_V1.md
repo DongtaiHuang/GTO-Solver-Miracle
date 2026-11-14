@@ -1,8 +1,8 @@
 # MIRACLE v1.0 release candidate
 
-**Status: Stage 1 preparation.** No public URL, production acceptance record, tag or release has been issued in this stage.
+**Status: free guest demo prepared locally.** Publication, the 512 MiB Linux container check and Render acceptance are pending. No verified public URL, tag or release yet.
 
-Next.js/React/TypeScript presents Study, Trainer, Hand Analyzer, Training Center and Player Account. FastAPI hosts an independent integer-chip six-player NLHE engine, deterministic replay, numerical services and owner-scoped persistence. PostgreSQL, SQLAlchemy, Alembic and Google identity tokens support private saves. Guest games remain ephemeral; tab archives require explicit import or export.
+The public demo offers Study, Trainer, Hand Analyzer and Training Center immediately without visitor login. Account APIs are absent and history uses tab-local storage or JSON export. The optional account-enabled deployment also provides Player Account. FastAPI hosts an independent integer-chip six-player NLHE engine, deterministic replay, numerical services and owner-scoped persistence. PostgreSQL, SQLAlchemy, Alembic and Google identity tokens support private saves. Guest games remain ephemeral; tab archives require explicit import or export.
 
 Study has 37 reviewed decision records: four restricted river decisions from Task 006A, five expanded river decisions from Task 008, and 28 published turn-to-river decisions from Task 009. CFR+ turn optimization integrates all 44 legal river cards per compatible deal. The published subset does not cover arbitrary hands, ranges, boards or bet sizes. Unsupported decisions stay ungraded. Showdown equity, equilibrium action EV and best response to an explicit opponent policy have different meanings. [Joint solver](TASK009.md) · [Conditional models](TASK011.md) · [Practice grading](TASK012.md)
 

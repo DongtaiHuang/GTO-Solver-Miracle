@@ -85,6 +85,22 @@ jobs:
           curl -fsS http://localhost:8000/ready
       - if: always()
         run: docker compose down --volumes --remove-orphans
+  guest-demo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -f Dockerfile.demo -t miracle-demo .
+      - name: Test guest image under 512 MiB including both runtimes
+        run: |
+          set -euo pipefail
+          docker run -d --name demo --memory=512m --memory-swap=512m -p 127.0.0.1:10123:10123 -e PORT=10123 -e RENDER_EXTERNAL_URL=https://demo.example.org miracle-demo
+          curl -fsS --retry 45 --retry-all-errors --retry-delay 1 http://127.0.0.1:10123/api/health
+          python tools/smoke_guest_demo.py 10123
+          docker exec demo cat /sys/fs/cgroup/memory.peak
+          test "$(docker inspect --format '{{.State.Running}} {{.State.OOMKilled}}' demo)" = 'true false'
+      - if: always()
+        run: docker rm -f demo || true
   browser:
     runs-on: ubuntu-latest
     steps:

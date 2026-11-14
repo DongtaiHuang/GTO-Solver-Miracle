@@ -43,7 +43,12 @@ def create_app(
     from poker_lab.infrastructure import validate_environment
 
     validate_environment()
-    sessions = store if store is not None else SessionStore()
+    guest_demo = os.getenv("MIRACLE_ENV") == "guest-demo"
+    sessions = (
+        store
+        if store is not None
+        else (SessionStore(capacity=64) if guest_demo else SessionStore())
+    )
 
     @asynccontextmanager
     async def lifespan(_: FastAPI) -> AsyncIterator[None]:
@@ -122,9 +127,9 @@ def create_app(
         with errors():
             return study_current(sessions.get(request.cookies.get(COOKIE)))
 
-    app.include_router(account_auth.router)
+    if not guest_demo:
+        app.include_router(account_auth.router)
 
-    @app.get("/ready")
     def ready(db: DB) -> dict[str, str]:
         if (
             db.execute(text("SELECT version_num FROM alembic_version")).scalar_one_or_none()
@@ -136,7 +141,11 @@ def create_app(
     app.include_router(create_equity_router())
     registry = strategy_catalog or configured_catalog(os.environ.get("STRATEGY_CATALOG"))
     app.include_router(create_strategy_router(registry))
-    app.include_router(data_router(registry))
+    if guest_demo:
+        app.get("/ready")(health)
+    else:
+        app.get("/ready")(ready)
+        app.include_router(data_router(registry))
 
     @app.post("/api/analyzer/replay")
     async def replay_hand(request: Request, body: analyzer.Hand) -> list[analyzer.Snapshot]:

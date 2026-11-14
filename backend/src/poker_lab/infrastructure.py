@@ -12,8 +12,8 @@ def validate_environment() -> None:
     mode = os.getenv("MIRACLE_ENV", "development")
     if mode == "development":
         return
-    if mode != "production":
-        raise ValueError("MIRACLE_ENV must be development or production")
+    if mode not in {"production","guest-demo"}:
+        raise ValueError("MIRACLE_ENV must be development, guest-demo or production")
     if os.getenv("COOKIE_SECURE") != "true":
         raise ValueError("Production requires COOKIE_SECURE=true")
     origin = urlsplit(os.getenv("TRAINER_ORIGIN", ""))
@@ -31,6 +31,8 @@ def validate_environment() -> None:
     hosts = os.getenv("ALLOWED_HOSTS", "").split(",")
     if not all(re.fullmatch(r"[A-Za-z0-9.-]+", host.strip()) for host in hosts):
         raise ValueError("Production requires explicit ALLOWED_HOSTS")
+    if mode == "guest-demo":
+        return
     try:
         url = make_url(os.getenv("DATABASE_URL", ""))
         valid = (
