@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: miracle-poker-demo
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile.demo
+    dockerContext: .
+    autoDeployTrigger: "off"
+    healthCheckPath: /api/health

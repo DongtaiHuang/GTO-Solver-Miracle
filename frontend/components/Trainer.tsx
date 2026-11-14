@@ -63,6 +63,7 @@ export function Trainer() {
       <div className="header-actions"><span className="practice-badge">Heuristic opponents</span>
         <button className="primary" disabled={busy || needsSync || profiles.length !== 5 || (!!game && !completed)}
           onClick={() => void mutate("/api/games", { opponents })}>New Hand</button></div></header>
+    {process.env.NEXT_PUBLIC_GUEST_DEMO==="true" && <p className="session-note">Guest demo · A live hand can expire if the service sleeps or restarts. Export completed reviews to keep them.</p>}
     {profileError && <div className="error-banner" role="alert">{profileError}</div>}
     <OpponentSetup profiles={profiles} configs={opponents} onChange={setOpponents}
       disabled={busy || profiles.length !== 5 || (!!game && !completed)} />

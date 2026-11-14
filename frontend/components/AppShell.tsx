@@ -12,7 +12,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <Link href="/" className="brand-lockup"><img src="/brand/orange-spade.png" width="36" height="36" alt="" />
       <span>MIRACLE<small>POKER STRATEGY LAB</small></span></Link>
     <p className="nav-caption">WORKSPACE</p>
-    <nav aria-label="Main navigation">{links.map(link => <Link key={link.href} href={link.href}
+    <nav aria-label="Main navigation">{links.filter(link=>link.href!=="/account" || process.env.NEXT_PUBLIC_GUEST_DEMO!=="true").map(link => <Link key={link.href} href={link.href}
       aria-current={path === link.href ? "page" : undefined}>
       <span className="nav-icon" aria-hidden="true">{link.icon}</span><span>{link.title}<small>{link.note}</small></span>
     </Link>)}</nav>
