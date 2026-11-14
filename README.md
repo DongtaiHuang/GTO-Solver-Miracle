@@ -1,129 +1,100 @@
-# GTO-Solver-Miracle
+
 
 ![GTO-Solver-Miracle](frontend/public/brand/gto_solver_miracle_orange_spade_logo.png)
 
-A full-stack Texas Hold'em GTO trainer and hand history analyzer featuring opponent modeling, exploitative strategy adjustments, and poker solver algorithms.
+GTO Solver Miracle ♠
 
-The description above states the long-term project vision. The current implementation includes the Task 001 engine, Task 002 interactive trainer, Task 003 strategy dashboard, Task 004 equity engine, and Task 005 exact strategy integration.
 
----
+An interactive Texas Hold’em study platform for practicing decisions, reviewing hands, exploring equity, and comparing solver-backed strategies with explicit opponent assumptions.
 
-## Task 011 — Multi-street response comparisons
+Built with Next.js, React, TypeScript, Python, FastAPI, and PostgreSQL.
 
-Study and Hand Analyzer can evaluate either acting seat on the reviewed Task 009 records against explicit conditional opponent policies. [Full-tree reference, EV comparisons and worked example](docs/TASK011.md).
+> **Project status:** Actively developed. Miracle offers a playable training table, hand analysis, equity tools, and a catalog of reviewed, bounded solver scenarios. It is **not** a general-purpose solver for every possible no-limit Hold’em game state, and the repository does not currently advertise a verified public demo URL.
 
-## Task 010 — Adaptive opponent modeling
+What you can do
 
-Open **Opponent observations** in Trainer, Analyzer, or Study to inspect replay-derived opportunities, uncertainty, and provisional archetypes. [Definitions, identity mapping, and tab-local archive](docs/TASK010.md).
+|Workspace                      |Capabilities                                                                                                                                                 |
+|-------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|**Study** (`/`)                |Explore a 169-hand starting-range matrix, edit weighted ranges, inspect blockers and board context, calculate equity, and query supported strategy scenarios.|
+|**Poker Trainer** (`/trainer`) |Play complete six-player hands against five automated opponents, choose legal actions and bet sizes, and review completed hands.                             |
+|**Hand Analyzer** (`/analyzer`)|Enter or replay six-player hands, inspect decision history, calculate equity, and compare available solver and opponent-model analyses.                      |
+|**Player Account**             |Use guest mode or configure Google sign-in and PostgreSQL-backed private training records and imports.                                                       |
 
-## Task 009 — Turn-to-river strategy
+Strategy and opponent modeling
 
-Study and Hand Analyzer support a joint turn-and-river CFR+ solve starting with BB on Kd 7h 2s Tc. Select ts-root-v1 to inspect turn EV across all legal river runouts. [Accuracy, coverage and reproduction](docs/TASK009.md).
+• Inspect reviewed solver-generated river decisions with mixed action frequencies, combination-level strategy, chip EV, and reported solution accuracy.
+• Explore a bounded joint turn-to-river CFR+ scenario across legal river runouts.
+• Compare equilibrium baselines with best responses to explicitly defined opponent policies on supported decisions.
+• Inspect replay-derived opponent observations, uncertainty, and provisional player archetypes.
+• Configure heuristic opponent styles in the trainer, including tight/aggressive and loose/passive profiles. A “Standard GTO” trainer bot label is not a claim that the bot is solver-optimal.
 
-## Task 008 — Expanded river strategies
+Equity and hand evaluation
 
-Study and Hand Analyzer include five additional solver decisions for weighted eight-combo ranges, two simultaneous bet sizes and a raise to 1,650 chips. [Solver accuracy, benchmarks and reproduction](docs/TASK008.md).
+• Calculate hand-versus-hand, hand-versus-weighted-range, and range-versus-range showdown equity.
+• Use exact enumeration for smaller cases or bounded seeded Monte Carlo sampling for larger cases, with uncertainty estimates where applicable.
+• Evaluate seven-card hands, ties, side pots, all-ins, and chip payouts through the independent rules engine.
+• Interpret pot odds under the tool’s displayed assumptions; showdown equity is not the same as a complete action EV calculation.
 
-## Task 007 — Hand History Analyzer
+Architecture
 
-Open /analyzer to enter and replay a six-player hand, inspect decisions, calculate equity, and compare supported solver and opponent-model strategies. Completed Trainer hands open through **Review This Hand**. [Hand format, persistence, and validation](docs/TASK007.md).
+Browser (Next.js / React / TypeScript)
+            |
+            | same-origin application routes
+            v
+Next.js server / API proxy
+            |
+            v
+FastAPI (Python)
+    |-- No-limit Hold'em rules and hand evaluator
+    |-- Equity and bounded strategy/solver analysis
+    |-- Training sessions and opponent observations
+    `-- Optional authenticated account storage (PostgreSQL)
 
-## Task 006B — Opponent-specific river responses
+The backend owns game state and card secrecy; the frontend renders only authorized public state. The repository also contains Docker Compose configuration, automated tests, CI workflows, and detailed technical documentation.
 
-Query a supported river decision in Study to compare equilibrium play and a best response to editable opponent combo probabilities. [Assumptions, EV formulas and reproduction](docs/TASK006B.md).
+Run locally
 
-## Task 006A — Solver-generated river strategies
+Prerequisites: Python 3.12+, Node.js 24, and npm. Commands below use PowerShell on Windows; on macOS/Linux replace .\.venv\Scripts\python.exe with .venv/bin/python.
 
-Study includes four reviewed decisions from two bounded BTN versus BB river games. Select a river scenario and query it to inspect individual combinations, mixed actions, chip EV and measured equilibrium error. [Solver, ranges, accuracy and reproduction](docs/TASK006A.md).
+Clone the project and install dependencies:
 
-## Task 005 — Exact strategy integration
-
-Study now opens in **Strategy visualization**, with exact scenario lookup, a mixed-frequency 169-hand matrix, combination details, sized actions, postflop history, provenance, and a side-by-side opponent-assumption comparison. **Range editing & equity** preserves the existing editable ranges and equity tools; Trainer remains at /trainer.
-
-At the Task 005 milestone the default GTO catalog was empty and displays **GTO solution unavailable**. Four synthetic preflop/flop/turn/river examples require an explicit opt-in and are never presented as GTO recommendations. Real exports require explicit source/redistribution permission and trusted, content-bound local review; metadata alone does not prove mathematical correctness. No exploitative best response is calculated.
-
-See [Task 005 dataset format, local import, review requirements, and limitations](docs/TASK005.md). Administrative import is a local CLI only. Keep private inputs/catalogs outside Git and Docker images, for example under the ignored .strategy-data/ directory. Existing development and validation commands below still apply.
-
----
-
-## Task 004 — Real showdown equity
-
-Study now calculates specific hand vs hand, hand vs weighted range, and range vs range equity using the existing evaluator. The backend additionally supports 2–6 players with fractional tied-pot shares. Small cases enumerate exactly; larger cases use bounded, seeded Monte Carlo with reported valid sample counts, standard errors, and conservative 95% intervals.
-
-In Equity Analysis, explicitly edit or adopt an assumed opponent range, choose cards/ranges/board/dead cards and method, then click **Calculate equity**. Nothing expensive runs on every keystroke. Pot odds use the calculated equity and a user-specified call amount, with the single-pot/no-future-betting assumptions clearly displayed. GTO frequencies and solver action EV remain unavailable.
-
-See [Task 004 algorithms, probability assumptions, limits, and benchmarks](docs/TASK004.md). The same development and validation commands below apply, including all existing tests and real browser flows. No new runtime dependency or alternate hand evaluator was introduced.
-
----
-
-## Task 003 — Strategy dashboard and opponent modeling
-
-Study is now the default landing page at http://localhost:3000. The playable table is preserved at http://localhost:3000/trainer, with a reserved Hand Analyzer at /hand-analyzer.
-
-Study includes the 169-class range matrix, independent hero/opponent inclusion weights, configurable full-hand context, five opponent profiles, exact combo/blocker and board facts, and explicit availability panels. **GTO solution unavailable** means no validated strategy data exists; no GTO frequencies, EV, equity, or exploitative recommendations are invented. Standard GTO is not yet solver-backed.
-
-Before a trainer hand, configure each of the five opponents. TAG, LAG, Tight Passive, and Loose Passive use distinct seeded heuristics. Standard GTO explicitly falls back to the original random heuristic. Current or completed trainer hands can open in Study using only the session-owned public state.
-
-See [Task 003 architecture and assumptions](docs/TASK003.md) for parameter defaults, range and policy formulas, API/provider contracts, data boundaries, and limitations. This branch is based on Task 002 commit 9cd1fea and depends on that implementation.
-
-Development commands below remain valid. Run the complete Python and frontend suites, including `npm run test:e2e`, as described in the Task 003 document.
-
----
-
-## Task 002 — Interactive Poker Trainer
-
-The trainer now plays complete six-player hands against five automated opponents. Hero occupies seat 0; the button rotates between hands. Each new practice hand resets all stacks to 10,000 integer chips (100 BB). This is a basic heuristic training table, not a solver or a GTO strategy recommendation.
-
-### Start the trainer
-
-From the repository root, install backend dependencies as shown below, then run:
-
-```powershell
-.\.venv\Scripts\python.exe -m uvicorn poker_lab.api:app --host 127.0.0.1 --port 8000 --reload
-```
-
-In a second terminal:
-
-```sh
+git clone https://github.com/DongtaiHuang/GTO-Solver-Miracle.git
+cd GTO-Solver-Miracle
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e './backend[dev]'
 npm ci
+
+Start the backend in one terminal:
+
+.\.venv\Scripts\python.exe -m uvicorn poker_lab.api:app --host 127.0.0.1 --port 8000 --reload
+
+Start the frontend in another terminal from the repository root:
+
 npm run dev
-```
 
-Open http://localhost:3000/trainer and choose **New Hand**. A browser reload restores the active hand. Opponents automatically act until the next hero decision; folding or going all-in runs the remaining hand to settlement. New Hand is available after completion. Opponent cards stay hidden on the server until a contested showdown; folded opponent cards and all opponent cards in uncontested hands remain hidden.
+|Local URL                       |Purpose              |
+|--------------------------------|---------------------|
+|`http://localhost:3000`         |Study workspace      |
+|`http://localhost:3000/trainer` |Poker Trainer        |
+|`http://localhost:3000/analyzer`|Hand Analyzer        |
+|`http://localhost:8000/health`  |Backend health check |
+|`http://localhost:8000/docs`    |FastAPI API reference|
 
-The table displays positions, stacks, committed street bets, status, board, total pot, effective stacks, chronological history, and per-pot payouts. Effective stack is the smaller of hero's remaining stack and the largest remaining nonfolded opponent stack; each player's public view also includes their effective stack against hero.
+Guest mode does not require PostgreSQL. For account persistence, configure the Google OAuth client and database environment variables using .env.example, then follow the account setup guide and the deployment/recovery guide if those are the current filenames in your checkout.
 
-Bet and raise inputs are **total street contributions**, not increments. Server-provided presets use the selected fraction of the pot after calling, added to the current wager, then clamp to the engine's legal full-raise range. Short all-ins use the All-in action; they are never disguised as a legal full raise. A short raise that has not reopened betting removes the raise controls.
+Docker
 
-### API and ownership
+For the base development stack:
 
-| Method | Path | Request |
-| --- | --- | --- |
-| POST | /api/games | `{}` — start a session or the next completed hand |
-| GET | /api/game | Restore the current session's public state |
-| POST | /api/game/actions | `{"hand_id":"…","revision":0,"action":"raise","amount":300}` |
+docker compose up --build --wait
+docker compose down
 
-The Next.js server proxies only these routes to FastAPI. No direct cross-origin browser API calls or browser-readable session tokens are needed. Every response is marked private and noncacheable.
+The base Compose configuration binds frontend and backend ports to 127.0.0.1; it does not publish Miracle on the internet. Account mode uses the separate compose.accounts.yaml overlay and additional configuration. Do not expose development defaults directly to the public internet.
 
-Sessions use an opaque, cryptographically random HttpOnly, SameSite=Strict cookie scoped to /api. The backend selects seeds using server entropy; clients cannot supply or retrieve seeds, decks, stacks, or pot values. Tests can inject fixed seeds internally. A hand ID identifies a hand but never grants access to it. Each operation requires the owning session cookie. Action payloads reject unknown fields and noninteger amounts, then pass through the original engine's validation.
+Quality and verification
 
-Hand IDs and revision numbers reject stale or duplicate decisions. The server locks session operations and commits the hero decision and subsequent bot actions together. The client disables controls during requests and refreshes authoritative state after a failed response before allowing further decisions.
+The project includes Python unit/integration tests, frontend component tests, TypeScript checks, linting, browser-level tests, and CI automation.
 
-Error responses: 400 for illegal engine actions, 404 for missing/expired sessions, 409 for stale or completed-hand actions or replacing an unfinished hand, 422 for invalid payloads, 503 when session capacity is reached. Mutation requests require JSON and reject an unapproved Origin.
-
-### Configuration and Docker
-
-| Variable | Service | Default |
-| --- | --- | --- |
-| BACKEND_URL | Next.js server | http://127.0.0.1:8000 |
-| TRAINER_ORIGIN | FastAPI | http://localhost:3000 |
-| COOKIE_SECURE | FastAPI | false; set true when using HTTPS |
-
-Set these as process environment variables when changing hosts or using HTTPS. Docker Compose connects the frontend to http://backend:8000 automatically and serves the UI at http://localhost:3000. Docker execution has not been verified locally because Docker is unavailable in this environment.
-
-### Tests
-
-```powershell
 cd backend
 ..\.venv\Scripts\python.exe -m pytest
 ..\.venv\Scripts\python.exe -m ruff check .
@@ -132,128 +103,42 @@ cd ..
 npm test
 npm run typecheck
 npm run build
-```
 
-For real browser tests, install Chromium once, set PYTHON to the virtual environment's Python executable, and run:
+For Playwright end-to-end testing, install Chromium and follow the browser-test setup described in the repository’s technical documentation, then run npm run test:e2e.
 
-```powershell
-$env:PYTHON = (Resolve-Path .\.venv\Scripts\python.exe).Path
-$env:PLAYWRIGHT_BROWSERS_PATH = "$PWD\.playwright-browsers"
-cd frontend
-npx playwright install chromium
-cd ..
-npm run test:e2e
-```
+The poker engine tests cover legal action enforcement, betting rounds, short raises, side pots, ties, showdown evaluation, deterministic scenarios, and chip conservation. Passing software tests does not establish that every solver strategy is globally optimal.
 
-On macOS/Linux use .venv/bin/python. Browser tests start the production frontend and backend, play through settlement, start another hand, verify hidden cards, and check the mobile viewport. Run the production build before them. CI runs Python checks, component tests, frontend checks/build, browser tests, and Docker smoke checks.
+Security and data boundaries
 
-### Current limitations
+• Training hands are owned by server-managed sessions, with opaque HttpOnly cookies and stale-action revision checks.
+• Hidden opponent cards remain private until the rules permit disclosure.
+• Optional account mode provides private records through Google sign-in and PostgreSQL.
+• Local administrative strategy imports and private catalogs should remain outside version control.
+• Production hosting requires HTTPS, secure cookies, correct allowed hosts/origins, persistent database storage, and deployment-specific validation.
 
-- Sessions are process-local memory, expire after two hours of inactivity, and are capped at 512. Restarting the backend loses hands. Run a single backend worker; shared storage and account authentication are future work. The browser cookie expires two hours after a new hand is created.
-- Different browser profiles have isolated sessions. Tabs in the same browser share a session and stale decisions are rejected.
-- The policy is a seeded randomized heuristic over legal actions. It has no strategic optimality guarantees and no equity, GTO, exploitative modeling, or coaching claims. Replace the `OpponentPolicy` protocol implementation for later models.
-- Bot actions run synchronously before each response; there is no paced animation, live multiplayer, or tournament bankroll persistence.
-- The suite currently reports a non-failing upstream Starlette warning about its httpx test-client integration.
+Scope and limitations
 
-Task 001's independent engine, integer chip accounting, evaluator, tests, and MIT license remain intact. The original foundation documentation follows for reference.
+Miracle’s solver-backed comparisons are available only for explicitly supported and reviewed scenarios. The interface should show when no validated strategy exists rather than fabricate GTO frequencies or EVs. Opponent models rely on observed data and assumptions; their classifications and exploitative recommendations are conditional, not guaranteed predictions. The training opponents are heuristic bots, not a live multiplayer poker service. Guest-session state may be lost on backend restart.
 
----
+Miracle is intended for poker education and software research, not real-money gambling or guaranteed financial outcomes.
 
-# Poker Strategy Lab — Task 001
+Technical documentation
 
-A Next.js / TypeScript frontend and FastAPI / Python backend monorepo with an independent, deterministic No-Limit Texas Hold’em rules engine. No solver, GTO ranges, equity simulation, training workflow, persistence, authentication, or strategy recommendations are implemented.
+Detailed methodology, validation, and reproduction instructions are kept separately so this README stays approachable:
 
-## Layout
+|Area                                                |Reference                                                                                                       |
+|----------------------------------------------------|----------------------------------------------------------------------------------------------------------------|
+|Rules engine, trainer, equity and strategy dashboard|[`docs/`](docs/) — Tasks 001–005                                                                                |
+|River solving and opponent-specific responses       |[`docs/TASK006A.md`](docs/TASK006A.md), [`docs/TASK006B.md`](docs/TASK006B.md)                                  |
+|Hand history analyzer                               |[`docs/TASK007.md`](docs/TASK007.md)                                                                            |
+|Expanded river and multi-street strategy            |[`docs/TASK008.md`](docs/TASK008.md), [`docs/TASK009.md`](docs/TASK009.md), [`docs/TASK011.md`](docs/TASK011.md)|
+|Adaptive opponent observations                      |[`docs/TASK010.md`](docs/TASK010.md)                                                                            |
+|Account and deployment configuration                |See the account/deployment guides in [`docs/`](docs/)                                                           |
 
-```text
-frontend/app/                 Next.js App Router project shell
-backend/src/poker_lab/
-  models.py                   Typed players, actions, streets, pots and awards
-  engine.py                   Single-hand state machine, betting and settlement
-  evaluator.py                Exact best-five-of-seven hand ranking
-  api.py                      FastAPI health endpoint only
-backend/tests/                Rule examples, evaluator cases and seeded simulations
-.github/workflows/ci.yml      Python checks, frontend build, Docker smoke checks
-compose.yaml                 Local frontend and backend services
-```
+Roadmap
 
-## Run locally
+Potential next steps include broader reviewed solver coverage, richer coaching and hand-review workflows, and a production-ready public deployment. These are directions, not promises of completed functionality.
 
-Requires Python 3.12+ and Node.js 24 (Node 20.9+ is the framework minimum).
+License
 
-```powershell
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -e './backend[dev]'
-.\.venv\Scripts\python.exe -m uvicorn poker_lab.api:app --reload
-```
-
-In a second terminal at the repository root:
-
-```sh
-npm ci
-npm run dev
-```
-
-Frontend: http://localhost:3000. Backend health: http://localhost:8000/health. API documentation: http://localhost:8000/docs. On macOS/Linux, substitute `.venv/bin/python` for `.\.venv\Scripts\python.exe`.
-
-At the Task 001 milestone, the frontend was a static foundation page with no network gameplay API; Task 002 adds the trainer described above. The engine is directly usable from Python and imports no web-framework code.
-
-## Engine contract
-
-```python
-from poker_lab.engine import Holdem
-from poker_lab.models import Action
-
-game = Holdem(seed=42)  # six seats; button at seat 0
-assert game.actor == 3
-assert game.legal_actions().min_raise_to == 200
-game.act(3, Action.RAISE, 300)  # total street contribution, not +300
-game.act(4, Action.CALL)
-```
-
-- Defaults: six occupied seats, 10,000 chips each (100 BB), small blind 50 and big blind 100. All chip amounts are integers. No rake or antes.
-- Seats run clockwise from zero. The button, optional 2–6 occupied seats, even big-blind size, and positive custom stacks are configurable for testing and future callers. Sitting out and zero-stack seats must be removed by the caller before a new hand.
-- A seeded private `random.Random` produces a reproducible shuffle without changing global RNG state. Alternatively, supply a complete permutation of the 52 card strings (`2c` through `As`). Cards are consumed from the front. Seeded randomness is for experiments, not secure real-money dealing.
-- Deal two rounds starting left of the button; in heads-up the button posts the small blind and acts first preflop. Burn one card before flop, turn and river. First postflop action is left of the button.
-- `legal_actions()` describes only the current actor: available actions, actual capped call cost, minimum full raise-to (or `None`), and total available street contribution. `act()` rejects out-of-turn actions, fractional amounts, under-raises, over-stack raises, and amounts on non-bet actions before changing state.
-- `BET` opens an unbet street; `RAISE` increases a bet. Both require a full minimum raise. `ALL_IN` handles short raises and short calls. Minimum raises use the last full increment, starting at one BB per street.
-- A short all-in does not itself reopen betting for a player who already acted. Cumulative short raises reopen betting once that player faces at least a full raise. Players who have not acted retain raise rights. A sole player with chips may call or fold but cannot bet into all-in opponents.
-- Betting closes when all nonfolded players with chips have acted and matched the wager. All-in hands run out automatically once no further decisions remain. A fold win settles immediately without revealing a board.
-- Contributions include folded money. Side pots are built at distinct contribution levels; only nonfolded contributors at that level can win. A one-contributor top tier returns the unmatched excess. Ties split evenly; odd chips go clockwise starting left of the button, independently for each pot.
-- Seven-card evaluation enumerates all 21 five-card subsets, including ace-low straights. Rank tuples compare lexicographically, from high card `(0, ...)` to straight flush `(8, high_card)`. Suits never break ties.
-- At completion, `awards` retains each pot's amount, eligible seats, winners and payouts. Award records include unmatched excess. Contributions and street bets reset to zero; stacks contain all settled chips. `actor` is `None`, legal actions are empty, and further actions are rejected.
-- A `Holdem` instance represents one hand. Construct the next instance with the desired button and stacks. Public dataclasses support inspection; callers must treat engine state as read-only and submit changes through `act()`.
-
-## Verification
-
-From `backend`, after installing development dependencies:
-
-```powershell
-..\.venv\Scripts\python.exe -m pytest
-..\.venv\Scripts\python.exe -m ruff check .
-..\.venv\Scripts\python.exe -m mypy
-```
-
-From the root:
-
-```sh
-npm run typecheck
-npm run build
-```
-
-Pytest enforces at least 95% combined statement and branch coverage. Tests cover deterministic dealing, positions and blind options, legal and rejected actions, full and short raises, cumulative reopening, all-in runouts, folded contributions, multiple side pots, unmatched excess, split pots and odd chips, all hand categories and kickers, and 150 seeded legal-action simulations with chip-conservation and termination assertions. These are software correctness checks, not a claim of strategic optimality or a formal proof of all game sequences.
-
-## Docker
-
-```sh
-docker compose up --build --wait
-docker compose down
-```
-
-Both application containers run as non-root users. GitHub Actions runs Python lint/type/test checks, a TypeScript check and production frontend build, then builds and smoke-tests both containers. The npm lockfile pins the frontend installation. Python dependency ranges and optional development tooling are declared in `backend/pyproject.toml`.
-
-Framework setup reference: [Next.js installation documentation](https://nextjs.org/docs/app/getting-started/installation).
-
-## Private accounts and database deployment
-
-Open **Player account** to sign in, import tab-local saves and access private training records, observations and Analyzer hands. Guest mode runs without PostgreSQL. For account mode, configure a Google web client, copy .env.example to .env, provide PostgreSQL settings and run the account Compose overlay. See [account setup](docs/TASK013.md) and [the Compose, readiness and verified recovery procedure](docs/TASK014A.md).
+Released under the MIT License.
