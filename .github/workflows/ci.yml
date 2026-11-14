@@ -99,6 +99,8 @@ jobs:
           python tools/smoke_guest_demo.py 10123
           docker exec demo cat /sys/fs/cgroup/memory.peak
           test "$(docker inspect --format '{{.State.Running}} {{.State.OOMKilled}}' demo)" = 'true false'
+          docker stop --time 15 demo
+          test "$(docker inspect --format '{{.State.ExitCode}} {{.State.OOMKilled}}' demo)" = '0 false'
       - if: always()
         run: docker rm -f demo || true
   browser:
