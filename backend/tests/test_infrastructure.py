@@ -25,6 +25,12 @@ def test_production_configuration(monkeypatch, key, bad):
     for name, value in settings.items():
         monkeypatch.setenv(name, value)
     validate_environment()
+    monkeypatch.setenv("PGSSLROOTCERT", "/run/secrets/postgres_ca")
+    with pytest.raises(ValueError, match="verify-full"):
+        validate_environment()
+    monkeypatch.setenv("DATABASE_URL", settings["DATABASE_URL"]+"?sslmode=verify-full")
+    validate_environment()
+    monkeypatch.delenv("PGSSLROOTCERT")
     monkeypatch.setenv(key, bad)
     with pytest.raises(ValueError, match=key):
         validate_environment()

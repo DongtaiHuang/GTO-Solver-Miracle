@@ -1,0 +1,38 @@
+# Pair with compose.yaml only. Database and host TLS ingress are operator-managed.
+x-db-env: &db-env
+  MIRACLE_ENV: production
+  COOKIE_SECURE: "true"
+  TRAINER_ORIGIN: ${TRAINER_ORIGIN:?Set the public HTTPS origin}
+  ALLOWED_HOSTS: backend,localhost,127.0.0.1
+  DATABASE_URL: ${DATABASE_URL:?Set the managed PostgreSQL URL with sslmode=verify-full}
+  PGSSLROOTCERT: /run/secrets/postgres_ca
+services:
+  migrate:
+    build: ./backend
+    environment: *db-env
+    secrets: [postgres_ca]
+    command: ["sh", "-ec", "python -c 'from poker_lab.infrastructure import validate_environment; validate_environment()' && alembic upgrade head"]
+  backend:
+    restart: unless-stopped
+    environment:
+      <<: *db-env
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:?Set the Google Web client ID}
+    secrets: [postgres_ca]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/ready', timeout=2)"]
+  frontend:
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/account',{signal:AbortSignal.timeout(2000)}).then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+secrets:
+  postgres_ca:
+    file: ${POSTGRES_CA_FILE:?Set the absolute path to the managed database CA}

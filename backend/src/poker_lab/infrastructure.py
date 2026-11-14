@@ -44,3 +44,5 @@ def validate_environment() -> None:
         valid = False
     if not valid:
         raise ValueError("Production requires a configured PostgreSQL DATABASE_URL")
+    if os.getenv("PGSSLROOTCERT") and url.query.get("sslmode") != "verify-full":
+        raise ValueError("Managed PostgreSQL requires sslmode=verify-full with PGSSLROOTCERT")
