@@ -8,7 +8,11 @@ Study has 37 reviewed decision records: four restricted river decisions from Tas
 
 **Prior evidence:** Task 014C passed 354 backend tests (98.06% combined coverage), 54 frontend tests, 12 numerical tests, TypeScript, a production build and 20 targeted Chromium tests locally. Its PR passed all six CI jobs. Task 014A exercised PostgreSQL 16.2 migration, process restart and native restore; Task 014B used locally signed test tokens. These results establish candidate behavior, not live Google authentication or public readiness. [014A](TASK014A.md) · [014B](TASK014B.md) · [014C](TASK014C.md)
 
-## Stage 2 acceptance record (all pending)
+## Personal demo acceptance (pending)
+
+Confirm a free provider-issued HTTPS URL, immediate guest access to all four study/play workflows, secure Trainer cookies, cold-start behavior and JSON export. Confirm the hosting workspace cannot incur overage charges. Record the verified URL before sharing it.
+
+## Optional account-enabled acceptance record (all pending)
 
 - [ ] Record authorized commit, image digests, provider, region, public URL, timestamp and reviewer. Verify migration, /health, /ready and public-to-private proxy connectivity.
 - [ ] On public HTTPS open all five routes. Play a guest hand, settle and reopen it in Analyzer. Query a supported and an unsupported Study scenario. Grade and retry a training attempt; confirm the exact-combo Study link.

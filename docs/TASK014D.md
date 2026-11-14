@@ -2,7 +2,15 @@
 
 Stage 1 is a local release candidate. The following deployment commands are for the operator **after Stage 2 approval**. No provider account, live URL, billing commitment or public release is evidenced by this document.
 
-## Hosting decision
+## Current release target: free guest demo
+
+Give visitors one provider-issued HTTPS URL for Study, Trainer, Analyzer and Training Center. Visitors play immediately without registering. Keep browser-tab saves and JSON export; omit cloud saves, the account sign-in prompt, managed PostgreSQL, migrations, a purchased domain and Google Cloud setup from this demo.
+
+Proposed hosting: one Render Free Docker web service running Next.js on the assigned public port and FastAPI on loopback behind the existing proxy. Use one service to share a single wake cycle and instance-hour allocation. The operator needs a free hosting account to connect GitHub; visitors do not. Use a free workspace without a payment method. If provider verification requires billing, stop before accepting it. As of 2026-11-13 Render documents 750 shared free instance hours/month, idle spin-down after 15 minutes, cold starts and ephemeral runtime state. A sleeping/restarted service loses active hands; tab-local exports remain usable. Without a payment method, exceeding applicable quotas can suspend service or pause builds. [Render free hosting](https://render.com/docs/free)
+
+Next authorized deployment work: prepare and test the single-container start/stop path, bind the API to loopback, set the exact public origin and secure Trainer cookie, hide account-only controls in guest-demo mode, and smoke-test the four guest workflows on the actual free URL. Verify memory fit on the chosen free instance. The account-enabled overlay below is optional future infrastructure. Its cost and acceptance gates do not apply to the personal demo.
+
+## Optional account-enabled hosting
 
 Estimates in USD per month, checked 2026-11-13. Assume one region, modest portfolio traffic, one live process per app and one single-node PostgreSQL 16 cluster. These are initial sizing hypotheses. Benchmark memory during builds and solver requests before launch. Domain registration, taxes, bandwidth overages, extra storage, VM snapshots and independent backup storage are additional. Single-node service has no standby.
 
